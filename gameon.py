@@ -202,17 +202,6 @@ class IsGoldHandler(BaseHandler):
             self.response.out.write('success')
 
 
-class BuyHandler(BaseHandler):
-    def get(self):
-        # paymentAmount = "3.99"
-        # CURRENCYCODE = "USD"
-        # RETURNURL = "https://multiplicationmaster.appspot.com/buy"
-        # CANCELURL = "https://multiplicationmaster.appspot.com/buy"
-
-        self.render('buy.jinja2')
-
-    def post(self):
-        self.render('buy.jinja2')
 
 
 class LogoutHandler(BaseHandler):
@@ -273,6 +262,7 @@ class TestsHandler(BaseHandler):
         try:
             self.render('templates/tests.jinja2')
         except Exception as e:
+            import logging
             logging.error(e)
 
 
@@ -328,7 +318,6 @@ routes = [
     ('/gameon/saveachievement', AchievementsHandler),
     ('/gameon/logout', LogoutHandler),
     ('/gameon/postback', PostbackHandler),
-    ('/gameon/buy', BuyHandler),
     ('/gameon/makegold', makeGoldHandler),
     ('/gameon/isgold', IsGoldHandler),
     ('/gameon/savevolume', SaveVolumeHandler),
