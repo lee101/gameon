@@ -1,17 +1,19 @@
 #!/usr/bin/env python
-
-from models.models import *
-from google.appengine.api import users
-from gameon_utils import GameOnUtils
 import os
+import json
+
+from google.appengine.api import users
 import webapp2
-import facebook
 from webapp2_extras import sessions
-import utils
 import jinja2
 
-import json
+import facebook
+from paypal import IPNHandler
+from models.models import *
+from gameon_utils import GameOnUtils
+import utils
 import jwt
+
 
 # application-specific imports
 from sellerinfo import SELLER_ID
@@ -273,6 +275,7 @@ class TestsHandler(BaseHandler):
         try:
             self.render('templates/tests.jinja2')
         except Exception as e:
+            import logging
             logging.error(e)
 
 
@@ -336,5 +339,7 @@ routes = [
     ('/gameon/savelevelsunlocked', SaveLevelsUnlockedHandler),
     ('/gameon/savedifficultiesunlocked', SaveDifficultiesUnlockedHandler),
     ('/gameon/tests', TestsHandler),
+    (r'/ipn/(.*)', IPNHandler),
+
 
 ]
