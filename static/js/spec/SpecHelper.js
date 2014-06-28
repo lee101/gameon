@@ -19,4 +19,19 @@ var specHelpers = new (function () {
         document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
     };
 
+
+    self.beforeAll = function (func) {
+        var calledTimes = 0;
+
+        var calledOnceFunc = function (done) {
+            if (calledTimes >= 1) {
+                done();
+            }
+            else {
+                func(done)
+            }
+        };
+        beforeEach(calledOnceFunc);
+    }
+
 })();
