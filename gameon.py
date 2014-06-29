@@ -166,7 +166,7 @@ class GetUserHandler(BaseHandler):
 
 
 class ScoresHandler(BaseHandler):
-    # TODO should be ndb.transactional
+    # TODO should be ndb.transactional but we would need ancestor queries
     def get(self):
         userscore = Score()
         userscore.score = int(self.request.get('score'))
