@@ -480,9 +480,18 @@ var gameon = new (function () {
         };
 
         boardSelf.getTile = function (y, x) {
+            if($.isArray(y)) {
+                x = y[1];
+                y = y[0];
+            }
             return boardSelf.tiles[y * boardSelf.width + x];
         };
         boardSelf.setTile = function (y, x, tile) {
+            if ($.isArray(y)) {
+                tile = x;
+                x = y[1];
+                y = y[0];
+            }
             boardSelf.tiles[y * boardSelf.width + x] = tile;
         };
 
