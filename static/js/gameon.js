@@ -184,7 +184,8 @@ var GameOnUser = function (userJSON) {
 
     return userJSON;
 };
-var gameon = new (function () {
+window.gameon = window.gameon || {};
+window.gameon = $.extend(gameon, new (function () {
     "use strict";
     var self = this;
 
@@ -951,4 +952,4 @@ var gameon = new (function () {
     };
 
     return self;
-})();
+})());
