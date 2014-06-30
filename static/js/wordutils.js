@@ -1,4 +1,5 @@
-window.wordutils = new (function () {
+window.gameon = window.gameon || {};
+window.gameon.wordutils = new (function () {
     "use strict";
     var self = this;
 
@@ -63,15 +64,14 @@ window.wordutils = new (function () {
     function cdf(hist) {
         var keys = Object.keys(hist);
         for (var i = 1; i < keys.length; i++) {
-            hist[keys[i]] = hist[keys[i]] + hist[keys[i - 1]]
+            hist[keys[i]] = hist[keys[i]] + hist[keys[i - 1]];
         }
         return hist;
     }
 
     var word_cdf = cdf(word_frequencies);
 
-    self.getRandomLetter = function()
-    {
+    self.getRandomLetter = function () {
         var position = Math.random();
         var keys = Object.keys(word_cdf);
         for (var i = 0; i < keys.length; i++) {
@@ -84,8 +84,11 @@ window.wordutils = new (function () {
     self.scoreWord = function (word) {
         var score = 0;
         for (var i = 0; i < word.length; i++) {
-            score += scrabbleScoring[word[i].toUpperCase()]
+            score += scrabbleScoring[word[i].toUpperCase()];
         }
-        return score
+        return score;
+    };
+    self.scoreLetter = function (l) {
+        return scrabbleScoring[l.toUpperCase()];
     };
 });

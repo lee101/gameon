@@ -184,7 +184,8 @@ var GameOnUser = function (userJSON) {
 
     return userJSON;
 };
-var gameon = new (function () {
+window.gameon = window.gameon || {};
+window.gameon = $.extend(gameon, new (function () {
     "use strict";
     var self = this;
 
@@ -303,11 +304,12 @@ var gameon = new (function () {
     };
 
     self.renderVolumeTo = function (target) {
+        var $target = $(target);
         var $volumeControl = $('.gameon-volume-template .gameon-volume').detach();
-        $volumeControl.appendTo(target);
+        $volumeControl.appendTo($target);
 
-        $(target).bind('destroyed', function () {
-            $(target + ' .gameon-volume').detach().appendTo('.gameon-volume-template');
+        $target.bind('destroyed', function () {
+            $target.find('.gameon-volume').detach().appendTo('.gameon-volume-template');
         });
     };
 
@@ -422,7 +424,7 @@ var gameon = new (function () {
         numBoards = 0;
     };
 
-    self.board = function (width, height, tiles) {
+    self.Board = function (width, height, tiles) {
         var boardSelf = this;
 
         function construct(width, height, tiles) {
@@ -891,15 +893,14 @@ var gameon = new (function () {
         };
 
         starSelf.render = function (target) {
-            starSelf.target = target;
+            starSelf.$target = $(target);
             var $starBar = $('.gameon-starbar-template .gameon-starbar').detach();
             $starBar.appendTo(starSelf.target);
-            $(starSelf.target).bind('destroyed', function () {
-                $(target + ' .gameon-starbar').detach().appendTo('.gameon-starbar-template');
+            starSelf.$target.bind('destroyed', function () {
+                starSelf.$target.find('.gameon-starbar').detach().appendTo('.gameon-starbar-template');
                 $('.gameon-starbar__star').removeClass('gameon-star--shiny');
                 starSelf.update();
             });
-//            $starBar.appendTo('.gameon-starbar-template');
         }
     };
 
@@ -960,4 +961,4 @@ var gameon = new (function () {
     };
 
     return self;
-})();
+})());
