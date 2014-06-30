@@ -50,7 +50,7 @@ describe("gameon", function () {
 
                 function saveCallback(data) {
                     times++;
-                    if (times === 4) {
+                    if (times >= 3) {
                         done();
                     }
                 }
