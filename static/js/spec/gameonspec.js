@@ -259,7 +259,7 @@ describe("gameon", function () {
 
             }
         }
-        board = new gameon.board(5, 5, tiles);
+        board = new gameon.Board(5, 5, tiles);
         board.render();
         $('[data-yx="' + board.name + '-0-0"]').trigger('mousedown');
     });

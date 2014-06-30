@@ -423,7 +423,7 @@ var gameon = new (function () {
         numBoards = 0;
     };
 
-    self.board = function (width, height, tiles) {
+    self.Board = function (width, height, tiles) {
         var boardSelf = this;
 
         function construct(width, height, tiles) {
