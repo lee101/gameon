@@ -1,17 +1,19 @@
 #!/usr/bin/env python
-
-from models.models import *
-from google.appengine.api import users
-from gameon_utils import GameOnUtils
 import os
+import json
+
+from google.appengine.api import users
 import webapp2
-import facebook
 from webapp2_extras import sessions
-import utils
 import jinja2
 
-import json
+import facebook
+from paypal import IPNHandler
+from models.models import *
+from gameon_utils import GameOnUtils
+import utils
 import jwt
+
 
 # application-specific imports
 from sellerinfo import SELLER_ID
@@ -164,6 +166,7 @@ class GetUserHandler(BaseHandler):
 
 
 class ScoresHandler(BaseHandler):
+    # TODO should be ndb.transactional but we would need ancestor queries
     def get(self):
         userscore = Score()
         userscore.score = int(self.request.get('score'))
@@ -325,5 +328,7 @@ routes = [
     ('/gameon/savelevelsunlocked', SaveLevelsUnlockedHandler),
     ('/gameon/savedifficultiesunlocked', SaveDifficultiesUnlockedHandler),
     ('/gameon/tests', TestsHandler),
+    (r'/ipn/(.*)', IPNHandler),
+
 
 ]

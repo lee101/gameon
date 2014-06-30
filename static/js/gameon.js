@@ -529,14 +529,14 @@ var gameon = new (function () {
 
         boardSelf.render = function (target) {
             if (typeof target === 'undefined') {
-                if (typeof boardSelf.target === 'undefined') {
+                if (typeof boardSelf.$target === 'undefined') {
                     target = '.gameon-board';
                 }
                 else {
-                    target = boardSelf.target;
+                    target = boardSelf.$target;
                 }
             }
-            boardSelf.target = target;
+            boardSelf.$target = $(target);
             var domtable = ['<table>'];
             for (var h = 0; h < boardSelf.height; h++) {
                 domtable.push("<tr>");
@@ -558,11 +558,11 @@ var gameon = new (function () {
             }
             domtable.push('</table>');
 
-            $(target).html(domtable.join(''));
+            boardSelf.$target.html(domtable.join(''));
         };
 
         boardSelf.getContainerAt = function (y, x) {
-            return $(boardSelf.target + ' tr:nth-child(' + (y + 1) + ') td:nth-child(' + (x + 1) + ')');
+            return boardSelf.$target.find('tr:nth-child(' + (y + 1) + ') td:nth-child(' + (x + 1) + ')');
         };
 
         boardSelf.falldown = function (newTiles, callback) {
@@ -571,7 +571,7 @@ var gameon = new (function () {
             //animate towards that state
             //refreshui
             //TODO better way of getting tiledist eg 60 if $(window).width()<suu
-            var tiledist = $(boardSelf.target + ' td').outerHeight();
+            var tiledist = boardSelf.$target.find('td').outerHeight();
             var falltime = 0.20;
             var maxNumDeletedPerColumn = 0;
             var newTileNum = 0;
@@ -916,9 +916,9 @@ var gameon = new (function () {
     };
 
     self.unlock = function (target) {
-        var button = $(target + ' button');
-        button.removeAttr('disabled');
-        button.find('.glyphicon-lock').remove();
+        var $button = $(target + ' button');
+        $button.removeAttr('disabled');
+        $button.find('.glyphicon-lock').remove();
     };
     self.isLocked = function (target) {
         var button = $(target + ' button');
