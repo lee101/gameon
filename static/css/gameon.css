@@ -120,6 +120,11 @@ and (min-height: 750px) {
         width: 60px;
         height: 60px;
     }
+    .gameon-board--small-tiles .btn-sm {
+        width: 40px;
+        height: 40px;
+        font-size: 19px;
+    }
 
     .gameon-btn-extra {
         font-size: 15px;
