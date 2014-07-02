@@ -895,7 +895,7 @@ window.gameon = $.extend(gameon, new (function () {
         starSelf.render = function (target) {
             starSelf.$target = $(target);
             var $starBar = $('.gameon-starbar-template .gameon-starbar').detach();
-            $starBar.appendTo(starSelf.target);
+            $starBar.appendTo(starSelf.$target);
             starSelf.$target.bind('destroyed', function () {
                 starSelf.$target.find('.gameon-starbar').detach().appendTo('.gameon-starbar-template');
                 $('.gameon-starbar__star').removeClass('gameon-star--shiny');
