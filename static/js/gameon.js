@@ -926,13 +926,13 @@ window.gameon = $.extend(gameon, new (function () {
     };
 
     self.unlock = function (target) {
-        var $button = $(target + ' button');
+        var $button = $(target).find('button');
         $button.removeAttr('disabled');
         $button.find('.glyphicon-lock').remove();
     };
     self.isLocked = function (target) {
-        var button = $(target + ' button');
-        return button.attr('disabled');
+        var $button = $(target).find('button');
+        return $button.attr('disabled');
     };
 
     self.shuffle = function (arr) {
@@ -947,10 +947,8 @@ window.gameon = $.extend(gameon, new (function () {
     };
 
     self.gotoLink = function (link) {
-
         if (!self.isInIFrame()) {
-            var url = $(link).attr('href');
-            window.location = url;
+            window.location = $(link).attr('href');
             return false;
         }
         return true
