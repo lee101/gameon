@@ -1,3 +1,4 @@
+/* ===========   Clock ======== */
 .gameon-clock {
     font-family: Helvetica, Arial, sans-serif;
     font-size: 16px;
@@ -9,6 +10,8 @@
         font-size: 18px;
     }
 }
+
+/* ===========    Board ======== */
 
 .gameon-board table {
     border: 1px solid #808080;
@@ -38,7 +41,33 @@
     height: 30px;
 }
 
-@media (min-width: 961px) and (max-width: 1280px)
+.gameon-btn-extra {
+    position: absolute;
+    font-size: 13px;
+    top: 13px;
+    left: 0;
+}
+
+@media (min-width: 861px)
+and (min-height: 650px) {
+    .gameon-board--small-tiles td {
+        width: 50px;
+        height: 50px;
+    }
+
+    .gameon-board--small-tiles .btn-lg {
+        width: 40px;
+        height: 40px;
+    }
+
+    .gameon-btn-extra {
+        font-size: 14px;
+        top: 19px;
+        left: 2px;
+    }
+}
+
+@media (min-width: 961px)
 and (min-height: 750px) {
     .gameon-board td {
         width: 80px;
@@ -61,6 +90,43 @@ and (min-height: 750px) {
         width: 50px;
         height: 50px;
     }
+
+    .gameon-btn-extra {
+        font-size: 15px;
+        top: 29px;
+        left: 2px;
+    }
+}
+
+@media (min-width: 1080px) and (min-height: 800px) {
+    .gameon-board td {
+        width: 100px;
+        height: 100px;
+    }
+
+    .gameon-board .btn-lg {
+        width: 80px;
+        height: 80px;
+        font-size: 46px;
+        padding: 0;
+    }
+
+    .gameon-board--small-tiles td {
+        width: 70px;
+        height: 70px;
+    }
+
+    .gameon-board--small-tiles .btn-lg {
+        width: 60px;
+        height: 60px;
+    }
+
+    .gameon-btn-extra {
+        font-size: 15px;
+        top: 38px;
+        left: 2px;
+    }
+
 }
 
 @media (min-width: 1280px) and (min-height: 961px) {
@@ -77,13 +143,13 @@ and (min-height: 750px) {
     }
 
     .gameon-board--small-tiles td {
-        width: 90px;
-        height: 60px;
+        width: 70px;
+        height: 70px;
     }
 
     .gameon-board--small-tiles .btn-lg {
-        width: 75px;
-        height: 75px;
+        width: 60px;
+        height: 60px;
     }
 }
 
@@ -95,6 +161,8 @@ and (min-height: 750px) {
     background-color: rgb(147, 204, 204);
 }
 
+
+/* =======    Volume Control ======== */
 .slider-volume {
     width: 130px;
 }
@@ -271,15 +339,4 @@ and (min-height: 750px) {
     float: left;
 }
 
-.mm-end-message {
-    font-size: 45px;
-    font-weight: bold;
-    color: #5CB75C;
-}
 
-.mm-bonus-message {
-    font-size: 20px;
-    font-weight: bold;
-    color: #333;
-    background-color: whitesmoke;
-}
