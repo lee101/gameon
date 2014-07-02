@@ -184,10 +184,9 @@ var GameOnUser = function (userJSON) {
 
     return userJSON;
 };
-window.gameon = window.gameon || {};
-window.gameon = $.extend(gameon, new (function () {
+window.gameon = new (function () {
     "use strict";
-    var self = this;
+    var self = window.gameon || {};
 
     self.getUser = function (callback) {
         if (self.user) {
@@ -959,4 +958,4 @@ window.gameon = $.extend(gameon, new (function () {
     };
 
     return self;
-})());
+})();
