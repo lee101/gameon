@@ -8,6 +8,14 @@
     };
 })(jQuery);
 
+window.gameon = window.gameon || {};
+window.gameon.blockUI = function () {
+    $.blockUI({ message: ''});
+};
+window.gameon.unblockUI = function () {
+    $.unblockUI();
+};
+
 
 // Add things to the default namespace D:
 Object.keys = Object.keys || function (o) {
