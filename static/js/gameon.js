@@ -1,4 +1,3 @@
-
 var GameOnUser = function (userJSON) {
 
     userJSON.saveScore = function (game_mode, score, callback) {
@@ -481,7 +480,7 @@ window.gameon = new (function () {
         };
 
         boardSelf.getTile = function (y, x) {
-            if($.isArray(y)) {
+            if ($.isArray(y)) {
                 x = y[1];
                 y = y[0];
             }
@@ -808,7 +807,7 @@ window.gameon = new (function () {
             starSelf._score += score;
             starSelf.update();
         };
-        starSelf.addMovesBonus= function (moves) {
+        starSelf.addMovesBonus = function (moves) {
             var averageScorePerMove = Math.ceil(starSelf.movesScores.average());
             var bonus = moves * averageScorePerMove * 2;
             starSelf.movesBonus = {
@@ -821,7 +820,7 @@ window.gameon = new (function () {
         starSelf.getScore = function () {
             return starSelf._score;
         };
-        starSelf.addTimeBonus = function(totalTime, timeLeft) {
+        starSelf.addTimeBonus = function (totalTime, timeLeft) {
             var averageScorePerMove = Math.ceil(starSelf.movesScores.average());
             var averageNumMovesPerSecond = starSelf.movesScores.length / totalTime;
             var bonus = Math.ceil(averageNumMovesPerSecond * averageScorePerMove * timeLeft * 2);
