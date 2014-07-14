@@ -842,7 +842,7 @@ window.gameon = new (function () {
         starSelf.update = function () {
             $('.highlight-track').html(starSelf.score);
             var conpleteRatio = starSelf._score / starSelf.end;
-            $(".gameon-starbar__track").css("width", conpleteRatio * 100);
+            $(".gameon-starbar__track").css("width", conpleteRatio * 100 + '%');
 
             var numStars = 0;
 
