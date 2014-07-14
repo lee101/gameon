@@ -1,5 +1,6 @@
 {% macro cssheaders() -%}
-    <link type="text/css" rel="stylesheet" href="/gameon/static/css/social-likes.css"/>
+    <link type="text/css" rel="stylesheet" href="/gameon/static/css/social-likes.css"
+          xmlns="http://www.w3.org/1999/html"/>
     <link type="text/css" rel="stylesheet" href="/gameon/static/bower_components/bootstrap/dist/css/bootstrap.min.css"/>
     <link type="text/css" rel="stylesheet" href="/gameon/static/css/font-awesome.min.css"/>
 
@@ -39,13 +40,17 @@
 
 {% macro starbar() -%}
     <div class="gameon-starbar">
-        <div class="gameon-starbar__stars">
-            <span class="gameon-starbar__star gameon-starbar__star--one"></span>
-            <span class="gameon-starbar__star gameon-starbar__star--two"></span>
-            <span class="gameon-starbar__star gameon-starbar__star--three"></span>
-        </div>
-        <div class="gameon-starbar__bar">
-            <input type="text" data-slider="true" value="0.8" data-slider-highlight="true">
+        <div class="gameon-starbar__bar progress progress-striped">
+            <div class="gameon-starbar__stars">
+                <span class="gameon-starbar__star gameon-starbar__star--one"></span>
+                <span class="gameon-starbar__star gameon-starbar__star--two"></span>
+                <span class="gameon-starbar__star gameon-starbar__star--three"></span>
+            </div>
+            <p class="gameon-starbar__score">
+            </p>
+            <div class="gameon-starbar__track progress-bar progress-bar-success progress-bar-striped" role="progressbar"
+                 aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+            </div>
         </div>
     </div>
 {%- endmacro %}
@@ -65,8 +70,8 @@
     <div class="gameon-volume-template">
         {{ volume() }}
     </div>
-    <div class="gameon-starbar-template">
+    <script class="gameon-starbar-template" type="text/html">
         {{ starbar() }}
-    </div>
+    </script>
 {%- endmacro %}
 

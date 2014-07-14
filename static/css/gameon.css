@@ -220,10 +220,11 @@ and (min-height: 750px) {
 }
 
 .gameon-starbar__score {
-    font-size: 20px;
+    font-size: 18px;
     margin-left: 10px;
     font-weight: bold;
-    float: left;
+    position: absolute;
+    top: -3px;
 }
 
 .gameon-starbar__stars {
@@ -231,6 +232,7 @@ and (min-height: 750px) {
     position: absolute;
     z-index: 10;
     top: -18px;
+    width: 100%;
 }
 
 .gameon-starbar__star {
@@ -249,7 +251,7 @@ and (min-height: 750px) {
 
 .gameon-starbar__bar {
     margin-top: 8px;
-
+    width: 100%;;
 }
 
 .gameon-stars {

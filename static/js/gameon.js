@@ -505,9 +505,7 @@ window.gameon = new (function () {
                     var newTile = {};
                     boardSelf.newTile(y, x, newTile);
                     boardSelf.setTile(y, x, newTile);
-                    //TODOFIX calling things on both objects
                     newTile.reRender();
-//                    boardSelf.render()
                 }
             }
         };
@@ -787,22 +785,12 @@ window.gameon = new (function () {
 
 
     self.StarBar = function (starrating) {
-        $('.gameon-starbar .track').off('click mousedown mouseup mousemove');
-        $('.gameon-starbar .highlight-track').off('click mousedown mouseup mousemove');
 
         var starSelf = this;
         starSelf.one = starrating[0];
         starSelf.two = starrating[1];
         starSelf.three = starrating[2];
         starSelf.end = starrating[3];
-        var sliderWidth = $('.gameon-starbar .slider').outerWidth();
-
-        var staronePos = (starSelf.one / starSelf.end) * sliderWidth;
-        var startwoPos = (starSelf.two / starSelf.end) * sliderWidth;
-        var starthreePos = (starSelf.three / starSelf.end) * sliderWidth;
-        $('.gameon-starbar__star--one').css({left: staronePos});
-        $('.gameon-starbar__star--two').css({left: startwoPos});
-        $('.gameon-starbar__star--three').css({left: starthreePos});
 
         starSelf.movesScores = [];
         starSelf.movesBonus = null;
@@ -855,7 +843,7 @@ window.gameon = new (function () {
         starSelf.update = function () {
             $('.highlight-track').html(starSelf.score);
             var conpleteRatio = starSelf._score / starSelf.end;
-            $(".gameon-starbar [data-slider]").simpleSlider("setRatio", conpleteRatio);
+            $(".gameon-starbar__track").css("width", conpleteRatio * 100);
 
             var numStars = 0;
 
@@ -888,18 +876,21 @@ window.gameon = new (function () {
             }
             starSelf.numStars = numStars;
 
-            $('.gameon-starbar .highlight-track').html('<p class="gameon-starbar__score">' + starSelf._score + '</p>')
+            $('.gameon-starbar__score').html(starSelf._score)
         };
 
         starSelf.render = function (target) {
             starSelf.$target = $(target);
-            var $starBar = $('.gameon-starbar-template .gameon-starbar').detach();
-            $starBar.appendTo(starSelf.$target);
-            starSelf.$target.bind('destroyed', function () {
-                starSelf.$target.find('.gameon-starbar').detach().appendTo('.gameon-starbar-template');
-                $('.gameon-starbar__star').removeClass('gameon-star--shiny');
-                starSelf.update();
-            });
+            var $starBar = $($.trim($('.gameon-starbar-template').html()));
+
+            var starOnePos = (starSelf.one / starSelf.end) * 100;
+            var starTwoPos = (starSelf.two / starSelf.end) * 100;
+            var starThreePos = (starSelf.three / starSelf.end) * 100;
+            $starBar.find('.gameon-starbar__star--one').css({left: starOnePos + '%'});
+            $starBar.find('.gameon-starbar__star--two').css({left: starTwoPos + '%'});
+            $starBar.find('.gameon-starbar__star--three').css({left: starThreePos + '%'});
+            starSelf.$target.html($starBar);
+
         }
     };
 
