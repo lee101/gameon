@@ -840,34 +840,33 @@ window.gameon = new (function () {
         };
 
         starSelf.update = function () {
-            $('.highlight-track').html(starSelf.score);
             var conpleteRatio = starSelf._score / starSelf.end;
-            $(".gameon-starbar__track").css("width", conpleteRatio * 100 + '%');
+            starSelf.$starBar.find(".gameon-starbar__track").css("width", conpleteRatio * 100 + '%');
 
             var numStars = 0;
 
             if (starSelf._score >= starSelf.one) {
-                $('.gameon-starbar__star--one').addClass('gameon-star--shiny');
+                starSelf.$starBar.find('.gameon-starbar__star--one').addClass('gameon-star--shiny');
                 numStars++;
             }
             else {
-                $('.gameon-starbar__star--one').removeClass('gameon-star--shiny');
+                starSelf.$starBar.find('.gameon-starbar__star--one').removeClass('gameon-star--shiny');
             }
 
             if (starSelf._score >= starSelf.two) {
-                $('.gameon-starbar__star--two').addClass('gameon-star--shiny');
+                starSelf.$starBar.find('.gameon-starbar__star--two').addClass('gameon-star--shiny');
                 numStars++;
             }
             else {
-                $('.gameon-starbar__star--two').removeClass('gameon-star--shiny');
+                starSelf.$starBar.find('.gameon-starbar__star--two').removeClass('gameon-star--shiny');
             }
 
             if (starSelf._score >= starSelf.three) {
-                $('.gameon-starbar__star--three').addClass('gameon-star--shiny');
+                starSelf.$starBar.find('.gameon-starbar__star--three').addClass('gameon-star--shiny');
                 numStars++;
             }
             else {
-                $('.gameon-starbar__star--three').removeClass('gameon-star--shiny');
+                starSelf.$starBar.find('.gameon-starbar__star--three').removeClass('gameon-star--shiny');
             }
 
             if (numStars > starSelf.numStars) {
@@ -875,21 +874,21 @@ window.gameon = new (function () {
             }
             starSelf.numStars = numStars;
 
-            $('.gameon-starbar__score').html(starSelf._score)
+            starSelf.$starBar.find('.gameon-starbar__score').html(starSelf._score);
         };
 
         starSelf.render = function (target) {
             starSelf.$target = $(target);
-            var $starBar = $($.trim($('.gameon-starbar-template').html()));
+            starSelf.$starBar = $($.trim($('.gameon-starbar-template').html()));
 
             var starOnePos = (starSelf.one / starSelf.end) * 100;
             var starTwoPos = (starSelf.two / starSelf.end) * 100;
             var starThreePos = (starSelf.three / starSelf.end) * 100;
-            $starBar.find('.gameon-starbar__star--one').css({left: starOnePos + '%'});
-            $starBar.find('.gameon-starbar__star--two').css({left: starTwoPos + '%'});
-            $starBar.find('.gameon-starbar__star--three').css({left: starThreePos + '%'});
-            starSelf.$target.html($starBar);
-
+            starSelf.$starBar.find('.gameon-starbar__star--one').css({left: starOnePos + '%'});
+            starSelf.$starBar.find('.gameon-starbar__star--two').css({left: starTwoPos + '%'});
+            starSelf.$starBar.find('.gameon-starbar__star--three').css({left: starThreePos + '%'});
+            starSelf.$target.html(starSelf.$starBar);
+            starSelf.update();
         }
     };
 
