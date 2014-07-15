@@ -306,6 +306,7 @@ describe("gameon", function () {
         var starBar = new gameon.StarBar([20, 40, 60, 100]);
         starBar.setScore(10);
         expect(starBar.numStars).toBe(0);
+        starBar.render('.gameon-test-starbar');
         starBar.setScore(21);
         expect(starBar.numStars).toBe(1);
         starBar.setScore(40);

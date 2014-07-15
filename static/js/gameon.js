@@ -798,6 +798,8 @@ window.gameon = new (function () {
         starSelf.numStars = 0;
         starSelf._score = 0;
 
+        starSelf.$starBar = $($.trim($('.gameon-starbar-template').html()));
+
         starSelf.setScore = function (score) {
             starSelf._score = score;
             starSelf.update();
@@ -879,7 +881,6 @@ window.gameon = new (function () {
 
         starSelf.render = function (target) {
             starSelf.$target = $(target);
-            starSelf.$starBar = $($.trim($('.gameon-starbar-template').html()));
 
             var starOnePos = (starSelf.one / starSelf.end) * 100;
             var starTwoPos = (starSelf.two / starSelf.end) * 100;
