@@ -42,10 +42,10 @@
 }
 .gameon-level-controls {
   margin: 0 auto;
-  width: 300px;
+  max-width: 300px;
 }
 .gameon-level-controls--small-tiles {
-  width: 360px;
+  max-width: 360px;
 }
 @media (min-width: 861px) and (min-height: 650px) {
   .gameon-board--small-tiles td {
@@ -57,7 +57,7 @@
     height: 40px;
   }
   .gameon-level-controls--small-tiles {
-    width: 450px;
+    max-width: 450px;
   }
   .gameon-btn-extra {
     font-size: 14px;
@@ -77,10 +77,10 @@
     padding: 0;
   }
   .gameon-level-controls {
-    width: 400px;
+    max-width: 400px;
   }
   .gameon-level-controls--small-tiles {
-    width: 540px;
+    max-width: 540px;
   }
   .gameon-board--small-tiles td {
     width: 60px;
@@ -108,10 +108,10 @@
     padding: 0;
   }
   .gameon-level-controls {
-    width: 500px;
+    max-width: 500px;
   }
   .gameon-level-controls--small-tiles {
-    width: 630px;
+    max-width: 630px;
   }
   .gameon-board--small-tiles td {
     width: 70px;
@@ -144,10 +144,10 @@
     padding: 0;
   }
   .gameon-level-controls {
-    width: 600px;
+    max-width: 600px;
   }
   .gameon-level-controls--small-tiles {
-    width: 630px;
+    max-width: 630px;
   }
   .gameon-board--small-tiles td {
     width: 70px;
