@@ -51,20 +51,11 @@
 
 .gameon-level-controls {
     margin: 0 auto;
-    width: 300px;
+    width: 5 * 60px;
 }
 
-@media (min-width: 961px) and (max-width: 1280px)
-and (min-height: 750px) {
-    .gameon-level-controls {
-        width: 400px;
-    }
-}
-
-@media (min-width: 1280px) and (min-height: 961px) {
-    .gameon-level-controls {
-        width: 600px;
-    }
+.gameon-level-controls--small-tiles {
+    width: 9*40px;
 }
 
 @media (min-width: 861px)
@@ -77,6 +68,10 @@ and (min-height: 650px) {
     .gameon-board--small-tiles .btn-lg {
         width: 40px;
         height: 40px;
+    }
+
+    .gameon-level-controls--small-tiles {
+        width: 9*50px;
     }
 
     .gameon-btn-extra {
@@ -98,6 +93,14 @@ and (min-height: 750px) {
         height: 70px;
         font-size: 36px;
         padding: 0;
+    }
+
+    .gameon-level-controls {
+        width: 5*80px;
+    }
+
+    .gameon-level-controls--small-tiles {
+        width: 9*60px;
     }
 
     .gameon-board--small-tiles td {
@@ -128,6 +131,14 @@ and (min-height: 750px) {
         height: 80px;
         font-size: 46px;
         padding: 0;
+    }
+
+    .gameon-level-controls {
+        width: 5*100px;
+    }
+
+    .gameon-level-controls--small-tiles {
+        width: 9*70px;
     }
 
     .gameon-board--small-tiles td {
@@ -165,6 +176,14 @@ and (min-height: 750px) {
         height: 100px;
         font-size: 60px;
         padding: 0;
+    }
+
+    .gameon-level-controls {
+        width: 5*120px;
+    }
+
+    .gameon-level-controls--small-tiles {
+        width: 9*70px;
     }
 
     .gameon-board--small-tiles td {
@@ -205,6 +224,10 @@ and (min-height: 750px) {
     display: block;
     margin: 10px 0 0 0;
     float: left;
+}
+
+.gameon-volume-template {
+    display: none;
 }
 
 .clear {
