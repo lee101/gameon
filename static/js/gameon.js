@@ -783,13 +783,24 @@ window.gameon = new (function () {
     })();
 
 
-    self.StarBar = function (starrating) {
-
+    self.StarBar = function (starrating, extraClass) {
         var starSelf = this;
-        starSelf.one = starrating[0];
-        starSelf.two = starrating[1];
-        starSelf.three = starrating[2];
-        starSelf.end = starrating[3];
+        starSelf.$starBar = $($.trim($('.gameon-starbar-template').html()));
+
+        if (starrating.length == 1) {
+            starSelf.end = starrating[0];
+            starSelf.$starBar.find('.gameon-starbar__stars').hide();
+        }
+        else {
+            starSelf.one = starrating[0];
+            starSelf.two = starrating[1];
+            starSelf.three = starrating[2];
+            starSelf.end = starrating[3];
+        }
+        if (typeof extraClass == 'undefined') {
+            extraClass = 'progress-bar-success'
+        }
+        starSelf.$starBar.find('.gameon-starbar__track').addClass(extraClass);
 
         starSelf.movesScores = [];
         starSelf.movesBonus = null;
@@ -798,7 +809,6 @@ window.gameon = new (function () {
         starSelf.numStars = 0;
         starSelf._score = 0;
 
-        starSelf.$starBar = $($.trim($('.gameon-starbar-template').html()));
 
         starSelf.setScore = function (score) {
             starSelf._score = score;

@@ -314,7 +314,24 @@ describe("gameon", function () {
         starBar.setScore(60);
         starBar.setScore(70);
         expect(starBar.numStars).toBe(3);
+
+        var blueStarBar = new gameon.StarBar([20, 40, 60, 100], 'progress-bar-primary');
+        blueStarBar.setScore(60);
+        blueStarBar.render('.gameon-test-blue-starbar');
+
+        var redStarBar = new gameon.StarBar([20, 40, 60, 100], 'progress-bar-danger');
+        redStarBar.setScore(70);
+        redStarBar.render('.gameon-test-red-starbar');
+
+        var noStarBar = new gameon.StarBar([100], 'progress-bar-info');
+        noStarBar.setScore(80);
+        noStarBar.render('.gameon-test-no-star-starbar');
+
+        expect(blueStarBar.getScore()).toBe(60);
+        expect(redStarBar.getScore()).toBe(70);
+        expect(noStarBar.getScore()).toBe(80);
         done();
+
     });
     it("should have a correct math package", function (done) {
         var maths = gameon.math;
