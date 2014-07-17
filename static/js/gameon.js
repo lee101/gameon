@@ -581,6 +581,10 @@ window.gameon = new (function () {
         };
 
         boardSelf.getPathFromTo = function (startTile, endTile) {
+            if (!startTile || !endTile) {
+                return null;
+            }
+
             //search end to start to get the backtrace the right way around
             var start = [endTile.yPos, endTile.xPos];
             var goal = [startTile.yPos, startTile.xPos];

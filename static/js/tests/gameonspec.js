@@ -312,6 +312,10 @@ describe("gameon", function () {
         expect(path).toEqual(null);
         var path = movableBoard.getPathFromTo({xPos: 0, yPos: 4}, {xPos: 4, yPos: 4});
         expect(path.length).toBe(5);
+
+        var path = movableBoard.getPathFromTo(null, {xPos: 4, yPos: 4});
+        expect(path).toEqual(null);
+
         done();
     });
 
