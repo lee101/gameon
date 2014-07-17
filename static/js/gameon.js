@@ -580,14 +580,6 @@ window.gameon = new (function () {
             return boardSelf.$target.find('tr:nth-child(' + (y + 1) + ') td:nth-child(' + (x + 1) + ')');
         };
 
-//        boardSelf.getPathFromTo = function (startTile, endTile) {
-//            try {
-//                return boardSelf._getPathFromTo(startTile, endTile)
-//            } catch (e) {
-//                return null;
-//            }
-//        };
-
         boardSelf.getPathFromTo = function (startTile, endTile) {
             //search end to start to get the backtrace the right way around
             var start = [endTile.yPos, endTile.xPos];
