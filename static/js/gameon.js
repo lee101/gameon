@@ -445,9 +445,17 @@ window.gameon = new (function () {
             }
         }
 
+        boardSelf.isInBoard = function (y, x) {
+            return y >= 0 && x >= 0 && y < boardSelf.height && x < boardSelf.width;
+        };
+
         boardSelf.newTile = function (y, x, tile) {
             tile.yPos = y;
             tile.xPos = x;
+
+            if (!tile.canPassThrough) {
+                tile.canPassThrough = false;
+            }
             tile.tileRender = function () {
                 var renderedData;
                 if (typeof this['render'] === 'function') {
@@ -572,12 +580,86 @@ window.gameon = new (function () {
             return boardSelf.$target.find('tr:nth-child(' + (y + 1) + ') td:nth-child(' + (x + 1) + ')');
         };
 
+//        boardSelf.getPathFromTo = function (startTile, endTile) {
+//            try {
+//                return boardSelf._getPathFromTo(startTile, endTile)
+//            } catch (e) {
+//                return null;
+//            }
+//        };
+
+        boardSelf.getPathFromTo = function (startTile, endTile) {
+            //search end to start to get the backtrace the right way around
+            var start = [endTile.yPos, endTile.xPos];
+            var goal = [startTile.yPos, startTile.xPos];
+            var seen = [];
+            var previous = [];
+            for (var y = 0; y < boardSelf.height; y++) {
+                seen.push([]);
+                previous.push([]);
+                for (var j = 0; j < boardSelf.width; j++) {
+                    seen[y].push(false);
+                    previous[y].push([])
+                }
+            }
+            seen[start[0]][start[1]] = true;
+
+            var queue = new Queue(),
+                next = start;
+            while (next) {
+                var xpos = next[1];
+                var ypos = next[0];
+
+                //left right up down
+                var currXPos = xpos - 1;
+                var currYPos = ypos;
+                if (boardSelf.isInBoard(currYPos, currXPos) && !seen[currYPos][currXPos] && boardSelf.getTile(currYPos, currXPos).canPassThrough) {
+                    seen[currYPos][currXPos] = true;
+                    previous[currYPos][currXPos] = [ypos, xpos];
+                    queue.enqueue([currYPos, currXPos])
+                }
+                var currXPos = xpos + 1;
+                if (boardSelf.isInBoard(currYPos, currXPos) && !seen[currYPos][currXPos] && boardSelf.getTile(currYPos, currXPos).canPassThrough) {
+                    seen[currYPos][currXPos] = true;
+                    previous[currYPos][currXPos] = [ypos, xpos];
+                    queue.enqueue([currYPos, currXPos])
+                }
+                var currXPos = xpos;
+                var currYPos = ypos - 1;
+                if (boardSelf.isInBoard(currYPos, currXPos) && !seen[currYPos][currXPos] && boardSelf.getTile(currYPos, currXPos).canPassThrough) {
+                    seen[currYPos][currXPos] = true;
+                    previous[currYPos][currXPos] = [ypos, xpos];
+                    queue.enqueue([currYPos, currXPos])
+                }
+                var currYPos = ypos + 1;
+                if (boardSelf.isInBoard(currYPos, currXPos) && !seen[currYPos][currXPos] && boardSelf.getTile(currYPos, currXPos).canPassThrough) {
+                    seen[currYPos][currXPos] = true;
+                    previous[currYPos][currXPos] = [ypos, xpos];
+                    queue.enqueue([currYPos, currXPos])
+                }
+
+                next = queue.dequeue();
+                if (!next) {
+                    return null;
+                }
+                if (next[0] == goal[0] && next[1] == goal[1]) {
+                    //we are here use previous to build list of the path
+                    var backtrace = [next];
+                    var current = next;
+                    while (!(current[0] == start[0] && current[1] == start[1])) {
+                        current = previous[current[0]][current[1]];
+                        backtrace.push(current)
+                    }
+                    return backtrace;
+                }
+            }
+        };
+
         boardSelf.falldown = function (newTiles, callback) {
 
             //work out the required state column by column and set the internal data to that straight away.
             //animate towards that state
             //refreshui
-            //TODO better way of getting tiledist eg 60 if $(window).width()<suu
             var tiledist = boardSelf.$target.find('td').outerHeight();
             var falltime = 0.20;
             var maxNumDeletedPerColumn = 0;

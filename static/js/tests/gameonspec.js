@@ -2,7 +2,7 @@ describe("setup", function () {
     it("should delete scores", function (done) {
         gameon.getUser(function (user) {
 
-            user.deleteAllScores(function() {
+            user.deleteAllScores(function () {
                 expect(user.scores).toEqual([]);
                 delete gameon.user;
                 window.setTimeout(function () {
@@ -262,6 +262,57 @@ describe("gameon", function () {
         board = new gameon.Board(5, 5, tiles);
         board.render();
         $('[data-yx="' + board.name + '-0-0"]').trigger('mousedown');
+    });
+
+    it("board should be able to get paths", function (done) {
+        var path = board.getPathFromTo({xPos: 0, yPos: 0}, {xPos: 4, yPos: 4});
+        expect(path).toEqual(null);
+
+        var tiles = [];
+        for (var i = 0; i < 5; i++) {
+            for (var j = 0; j < 5; j++) {
+                var tile = new Tile();
+                tile.canPassThrough = true;
+                tile.click = function () {
+                    console.log('click');
+                    done();
+                };
+                tiles.push(tile);
+
+            }
+        }
+        var movableBoard = new gameon.Board(5, 5, tiles);
+
+        var path = movableBoard.getPathFromTo({xPos: 0, yPos: 0}, {xPos: 4, yPos: 4});
+        expect(path.length).toBe(9);
+        expect(path[0]).toEqual([0, 0]);
+        expect(path[8]).toEqual([4, 4]);
+
+        var tiles = [];
+        for (var i = 0; i < 5; i++) {
+            for (var j = 0; j < 5; j++) {
+                var tile = new Tile();
+                tile.canPassThrough = true;
+                if (i == 2) {
+                    tile.canPassThrough = false;
+                }
+                tile.click = function () {
+                    console.log('click');
+                    done();
+                };
+                tiles.push(tile);
+
+            }
+        }
+        var movableBoard = new gameon.Board(5, 5, tiles);
+
+        var path = movableBoard.getPathFromTo({xPos: 0, yPos: 0}, {xPos: 4, yPos: 4});
+        expect(path).toEqual(null);
+        var path = movableBoard.getPathFromTo({xPos: 4, yPos: 0}, {xPos: 4, yPos: 4});
+        expect(path).toEqual(null);
+        var path = movableBoard.getPathFromTo({xPos: 0, yPos: 4}, {xPos: 4, yPos: 4});
+        expect(path.length).toBe(5);
+        done();
     });
 
     it("board should be able to delete tiles and do a falldown animation", function (done) {
