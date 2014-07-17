@@ -635,7 +635,6 @@ window.gameon = new (function () {
                     return null;
                 }
                 if (next[0] == goal[0] && next[1] == goal[1]) {
-                    //we are here use previous to build list of the path
                     var backtrace = [next];
                     var current = next;
                     while (!(current[0] == start[0] && current[1] == start[1])) {
