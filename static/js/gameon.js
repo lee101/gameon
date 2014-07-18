@@ -503,6 +503,38 @@ window.gameon = new (function () {
             boardSelf.tiles[y * boardSelf.width + x] = tile;
         };
 
+        boardSelf.swapTiles = function (a1, a2, a3, a4) {
+            var y1,x1,y2,x2;
+            if ($.isArray(a1)) {
+                y1 = a1[0];
+                x1 = a1[1];
+            }
+            else if (typeof a1 == 'object') {
+                y1 = a1.yPos;
+                x1 = a1.xPos;
+            }
+            else {
+                y1 = a1;
+                x1 = a2;
+            }
+
+            if ($.isArray(a2)) {
+                y2 = a2[0];
+                x2 = a2[1];
+            }
+            else if (typeof a2 == 'object') {
+                y2 = a2.yPos;
+                x2 = a2.xPos;
+            }
+            else {
+                y2 = a3;
+                x2 = a4;
+            }
+            var tmp = boardSelf.getTile(y1, x1);
+            boardSelf.setTile(y1, x1, boardSelf.getTile(y2,x2));
+            boardSelf.setTile(y2,x2,tmp);
+        };
+
         boardSelf.removeWhere = function (func) {
             for (var i = 0; i < boardSelf.tiles.length; i++) {
                 if (func(boardSelf.tiles[i])) {

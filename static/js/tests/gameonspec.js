@@ -318,6 +318,34 @@ describe("gameon", function () {
 
         done();
     });
+    it("board should be able to swap tiles", function (done) {
+        var tile00 = board.getTile(1, 0);
+        var tile44 = board.getTile(3, 4);
+        board.swapTiles({xPos: 0, yPos: 1}, {xPos: 4, yPos: 3});
+        var expectedTile44 = board.getTile(1, 0);
+        var expectedTile00 = board.getTile(3, 4);
+        expect(tile00).toEqual(expectedTile00);
+        expect(tile44).toEqual(expectedTile44);
+
+        var tile00 = board.getTile(1, 0);
+        var tile44 = board.getTile(3, 4);
+        board.swapTiles(1, 0, 3, 4);
+        var expectedTile44 = board.getTile(1, 0);
+        var expectedTile00 = board.getTile(3, 4);
+        expect(tile00).toEqual(expectedTile00);
+        expect(tile44).toEqual(expectedTile44);
+
+        var tile00 = board.getTile(1, 0);
+        var tile44 = board.getTile(3, 4);
+        board.swapTiles([1, 0], [3, 4]);
+        var expectedTile44 = board.getTile(1, 0);
+        var expectedTile00 = board.getTile(3, 4);
+        expect(tile00).toEqual(expectedTile00);
+        expect(tile44).toEqual(expectedTile44);
+
+        done();
+
+    });
 
     it("board should be able to delete tiles and do a falldown animation", function (done) {
         var endPos = board.tiles.length - 1;
