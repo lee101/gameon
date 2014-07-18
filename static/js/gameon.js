@@ -617,9 +617,8 @@ window.gameon = new (function () {
                 return null;
             }
 
-            //search end to start to get the backtrace the right way around
-            var start = [endTile.yPos, endTile.xPos];
-            var goal = [startTile.yPos, startTile.xPos];
+            var start = [startTile.yPos, startTile.xPos];
+            var goal = [endTile.yPos, endTile.xPos];
             var seen = [];
             var previous = [];
             for (var y = 0; y < boardSelf.height; y++) {
@@ -646,20 +645,20 @@ window.gameon = new (function () {
                     previous[currYPos][currXPos] = [ypos, xpos];
                     queue.enqueue([currYPos, currXPos])
                 }
-                var currXPos = xpos + 1;
+                currXPos = xpos + 1;
                 if (boardSelf.isInBoard(currYPos, currXPos) && !seen[currYPos][currXPos] && boardSelf.getTile(currYPos, currXPos).canPassThrough) {
                     seen[currYPos][currXPos] = true;
                     previous[currYPos][currXPos] = [ypos, xpos];
                     queue.enqueue([currYPos, currXPos])
                 }
-                var currXPos = xpos;
-                var currYPos = ypos - 1;
+                currXPos = xpos;
+                currYPos = ypos - 1;
                 if (boardSelf.isInBoard(currYPos, currXPos) && !seen[currYPos][currXPos] && boardSelf.getTile(currYPos, currXPos).canPassThrough) {
                     seen[currYPos][currXPos] = true;
                     previous[currYPos][currXPos] = [ypos, xpos];
                     queue.enqueue([currYPos, currXPos])
                 }
-                var currYPos = ypos + 1;
+                currYPos = ypos + 1;
                 if (boardSelf.isInBoard(currYPos, currXPos) && !seen[currYPos][currXPos] && boardSelf.getTile(currYPos, currXPos).canPassThrough) {
                     seen[currYPos][currXPos] = true;
                     previous[currYPos][currXPos] = [ypos, xpos];
@@ -677,7 +676,7 @@ window.gameon = new (function () {
                         current = previous[current[0]][current[1]];
                         backtrace.push(current)
                     }
-                    return backtrace;
+                    return backtrace.reverse();
                 }
             }
         };
