@@ -504,7 +504,7 @@ window.gameon = new (function () {
         };
 
         boardSelf.swapTiles = function (a1, a2, a3, a4) {
-            var y1,x1,y2,x2;
+            var y1, x1, y2, x2;
             if ($.isArray(a1)) {
                 y1 = a1[0];
                 x1 = a1[1];
@@ -531,8 +531,8 @@ window.gameon = new (function () {
                 x2 = a4;
             }
             var tmp = boardSelf.getTile(y1, x1);
-            boardSelf.setTile(y1, x1, boardSelf.getTile(y2,x2));
-            boardSelf.setTile(y2,x2,tmp);
+            boardSelf.setTile(y1, x1, boardSelf.getTile(y2, x2));
+            boardSelf.setTile(y2, x2, tmp);
         };
 
         boardSelf.removeWhere = function (func) {
