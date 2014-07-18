@@ -681,6 +681,65 @@ window.gameon = new (function () {
             }
         };
 
+        boardSelf.animateTileAlongPath = function(tile, path, animationSpeed, callback) {
+
+            var timescalled = 0;
+            var cellWidth = boardSelf.$target.find('td').outerWidth();
+
+            function handleAnimation() {
+                //custom animation followed by update
+
+                var currentPos = timescalled;
+                var nextPos = timescalled + 1;
+
+                if (path[currentPos][1] > path[nextPos][1]) {
+                    var newcss = {
+                        left: '-=' + cellWidth
+                    }
+                }
+                if (path[currentPos][1] < path[nextPos][1]) {
+                    var newcss = {
+                        left: '+=' + cellWidth
+                    }
+                }
+                if (path[currentPos][0] > path[nextPos][0]) {
+                    var newcss = {
+                        top: '-=' + cellWidth
+                    }
+                }
+                if (path[currentPos][0] < path[nextPos][0]) {
+                    var newcss = {
+                        top: '+=' + cellWidth
+                    }
+                }
+                timescalled++;
+                var stopping = timescalled >= path.length - 1;
+
+                var $renderedTile = boardSelf.getRenderedTile(tile.yPos, tile.xPos);
+                if (!stopping) {
+                    $renderedTile.animate(newcss, animationSpeed, handleAnimation);
+                }
+
+                if (stopping) {
+                    //last time
+                    $renderedTile.animate(newcss, animationSpeed, function () {
+                        //stop animation
+                        $renderedTile.css({
+                            left: '0px',
+                            top: '0px'
+                        });
+
+                        gameon.unblockUI();
+                        callback();
+                    })
+
+                }
+            }
+
+            gameon.blockUI();
+            handleAnimation();
+        };
+
         boardSelf.falldown = function (newTiles, callback) {
 
             //work out the required state column by column and set the internal data to that straight away.
