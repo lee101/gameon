@@ -500,6 +500,8 @@ window.gameon = new (function () {
                 x = y[1];
                 y = y[0];
             }
+            tile.yPos = y;
+            tile.xPos = x;
             boardSelf.tiles[y * boardSelf.width + x] = tile;
         };
 
@@ -790,8 +792,6 @@ window.gameon = new (function () {
                     boardSelf.newTile(h, w, currNewTile);
 
                     //update our model
-                    currNewTile.yPos = h;
-                    currNewTile.xPos = w;
                     boardSelf.setTile(h, w, currNewTile);
 
                     var container = boardSelf.getContainerAt(h, w);
