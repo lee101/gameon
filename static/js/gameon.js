@@ -585,7 +585,12 @@ window.gameon = new (function () {
                 }
             }
             boardSelf.$target = $(target);
-            var domtable = ['<div class="gameon-board-popups"></div><table>'];
+            var domtable = [];
+            var popups = boardSelf.$target.find('.gameon-board-popups');
+            if (!popups.length) {
+                domtable.push('<div class="gameon-board-popups"></div>');
+            }
+            domtable.push('<table>');
             for (var h = 0; h < boardSelf.height; h++) {
                 domtable.push("<tr>");
                 for (var w = 0; w < boardSelf.width; w++) {
@@ -605,8 +610,8 @@ window.gameon = new (function () {
                 domtable.push("</tr>");
             }
             domtable.push('</table>');
-
-            boardSelf.$target.html(domtable.join(''));
+            boardSelf.$target.find('table').remove();
+            boardSelf.$target.append(domtable.join(''));
         };
 
         boardSelf.getContainerAt = function (y, x) {
