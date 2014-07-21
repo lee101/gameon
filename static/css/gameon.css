@@ -167,6 +167,7 @@
   .gameon-board--small-tiles .btn-lg {
     width: 60px;
     height: 60px;
+    font-size: 46px;
   }
 }
 .gameon-board .even {
