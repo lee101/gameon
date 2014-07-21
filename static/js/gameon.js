@@ -500,8 +500,7 @@ window.gameon = new (function () {
                 x = y[1];
                 y = y[0];
             }
-            tile.yPos = y;
-            tile.xPos = x;
+            boardSelf.newTile(y, x, tile);
             boardSelf.tiles[y * boardSelf.width + x] = tile;
         };
 
@@ -757,7 +756,7 @@ window.gameon = new (function () {
             var positionSequence = [7, 3, 5, 9, 2, 4, 8, 1, 6];
             var positions = [];
             for (var y = 1; y <= 3; y++) {
-                for (var x = 0; x <  3; x++) {
+                for (var x = 0; x < 3; x++) {
                     positions.push([y / 3 * (boardHeight) + 100 - boardHeight / 2, x / 3 * (boardWidth) + 4 - boardWidth / 2])
                 }
             }
