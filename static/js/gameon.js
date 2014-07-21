@@ -586,7 +586,7 @@ window.gameon = new (function () {
                 }
             }
             boardSelf.$target = $(target);
-            var domtable = ['<table>'];
+            var domtable = ['<div class="gameon-board-popups"></div><table>'];
             for (var h = 0; h < boardSelf.height; h++) {
                 domtable.push("<tr>");
                 for (var w = 0; w < boardSelf.width; w++) {
@@ -683,7 +683,7 @@ window.gameon = new (function () {
             }
         };
 
-        boardSelf.animateTileAlongPath = function(tile, path, animationSpeed, callback) {
+        boardSelf.animateTileAlongPath = function (tile, path, animationSpeed, callback) {
 
             var timescalled = 0;
             var cellWidth = boardSelf.$target.find('td').outerWidth();
@@ -740,6 +740,36 @@ window.gameon = new (function () {
 
             gameon.blockUI();
             handleAnimation();
+        };
+
+        var fadingPopupCounter = 0;
+
+        boardSelf.fadingPopup = function (content) {
+            fadingPopupCounter++;
+
+            var $container = boardSelf.$target.find('.gameon-board-popups');
+            var $popup = $('<div class="gameon-board-popups__popup">' + content + '</div>');
+            //get top and left values
+            var $boardTable = boardSelf.$target.find('table');
+            var boardHeight = $boardTable.outerHeight();
+            var boardWidth = $boardTable.outerWidth();
+
+            var positionSequence = [7, 3, 5, 9, 2, 4, 8, 1, 6];
+            var positions = [];
+            for (var y = 1; y <= 3; y++) {
+                for (var x = 0; x <  3; x++) {
+                    positions.push([y / 3 * (boardHeight) + 100 - boardHeight / 2, x / 3 * (boardWidth) + 4 - boardWidth / 2])
+                }
+            }
+            fadingPopupCounter %= positionSequence.length;
+
+            var position = positions[positionSequence[fadingPopupCounter] - 1];
+            $popup.css({top: position[0], left: position[1]});
+
+            $container.append($popup);
+            $popup.animate({top: '-=100px', opacity: 0}, 4000, function () {
+                $popup.remove();
+            });
         };
 
         boardSelf.falldown = function (newTiles, callback) {

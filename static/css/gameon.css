@@ -14,6 +14,17 @@
   border: 1px solid #808080;
   margin: 0 auto;
   overflow: hidden;
+  position: relative;
+}
+.gameon-board-popups {
+  position: relative;
+  margin: 0 auto;
+  width: 1px;
+}
+.gameon-board-popups__popup {
+  position: absolute;
+  z-index: 100;
+  height: 0;
 }
 .gameon-board td {
   width: 60px;

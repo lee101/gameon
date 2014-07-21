@@ -346,7 +346,14 @@ describe("gameon", function () {
         done();
 
     });
+    it("board should be able to show fading popups", function (done) {
+        for (var i = 0; i < 10; i++) {
+            board.fadingPopup('<button type="button" class="btn btn-success">0 Points!</button>')
+        }
 
+        done();
+
+    });
     it("board should be able to delete tiles and do a falldown animation", function (done) {
         var endPos = board.tiles.length - 1;
 
@@ -437,7 +444,7 @@ describe("gameon", function () {
         for (var i = 0; i < numline.length(); i++) {
             total += numline.shuffledGet(i);
         }
-        expect(total).toBe(expectedTotal);
+        expect(Math.round(total)).toBe(expectedTotal);
 
 
         var got = gameon.math.precisionRound(1.11, 0.1);
