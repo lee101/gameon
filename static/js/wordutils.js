@@ -91,4 +91,8 @@ window.gameon.wordutils = new (function () {
     self.scoreLetter = function (l) {
         return scrabbleScoring[l.toUpperCase()];
     };
+
+    self.capitaliseFirstLetter = function (word) {
+        return word.charAt(0).toUpperCase() + word.slice(1);
+    }
 });
