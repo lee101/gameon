@@ -687,6 +687,66 @@ window.gameon = new (function () {
             }
         };
 
+        boardSelf.getAllReachableTilesFrom = function (startTile) {
+            if (!startTile) {
+                return [];
+            }
+
+            var seen = [];
+            for (var y = 0; y < boardSelf.height; y++) {
+                seen.push([]);
+                for (var j = 0; j < boardSelf.width; j++) {
+                    seen[y].push(false);
+                }
+            }
+            seen[startTile.yPos][startTile.xPos] = true;
+            var availableMoves = [];
+
+            var stack = [],
+                next = startTile;
+            while (next) {
+                var ypos = next.yPos;
+                var xpos = next.xPos;
+
+                //left right up down
+                var currXPos = xpos - 1;
+                var currYPos = ypos;
+                if (boardSelf.isInBoard(currYPos, currXPos) && !seen[currYPos][currXPos] && boardSelf.getTile(currYPos, currXPos).canPassThrough) {
+                    seen[currYPos][currXPos] = true;
+                    var possibleMove = boardSelf.getTile(currYPos, currXPos);
+                    stack.push(possibleMove);
+                    availableMoves.push(possibleMove);
+                }
+                currXPos = xpos + 1;
+                if (boardSelf.isInBoard(currYPos, currXPos) && !seen[currYPos][currXPos] && boardSelf.getTile(currYPos, currXPos).canPassThrough) {
+                    seen[currYPos][currXPos] = true;
+                    var possibleMove = boardSelf.getTile(currYPos, currXPos);
+                    stack.push(possibleMove);
+                    availableMoves.push(possibleMove);
+                }
+                currXPos = xpos;
+                currYPos = ypos - 1;
+                if (boardSelf.isInBoard(currYPos, currXPos) && !seen[currYPos][currXPos] && boardSelf.getTile(currYPos, currXPos).canPassThrough) {
+                    seen[currYPos][currXPos] = true;
+                    var possibleMove = boardSelf.getTile(currYPos, currXPos);
+                    stack.push(possibleMove);
+                    availableMoves.push(possibleMove);
+                }
+                currYPos = ypos + 1;
+                if (boardSelf.isInBoard(currYPos, currXPos) && !seen[currYPos][currXPos] && boardSelf.getTile(currYPos, currXPos).canPassThrough) {
+                    seen[currYPos][currXPos] = true;
+                    var possibleMove = boardSelf.getTile(currYPos, currXPos);
+                    stack.push(possibleMove);
+                    availableMoves.push(possibleMove);
+                }
+
+                next = stack.pop();
+                if (!next) {
+                    return availableMoves;
+                }
+            }
+        };
+
         boardSelf.animateTileAlongPath = function (tile, path, animationSpeed, callback) {
 
             var timescalled = 0;

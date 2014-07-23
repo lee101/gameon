@@ -288,6 +288,9 @@ describe("gameon", function () {
         expect(path[0]).toEqual([0, 0]);
         expect(path[8]).toEqual([4, 4]);
 
+        var reachableTiles = movableBoard.getAllReachableTilesFrom(movableBoard.getTile(0,0));
+        expect(reachableTiles.length).toBe(24);
+
         var tiles = [];
         for (var i = 0; i < 5; i++) {
             for (var j = 0; j < 5; j++) {
@@ -315,6 +318,13 @@ describe("gameon", function () {
 
         var path = movableBoard.getPathFromTo(null, {xPos: 4, yPos: 4});
         expect(path).toEqual(null);
+
+
+        var reachableTiles = movableBoard.getAllReachableTilesFrom(movableBoard.getTile(0, 0));
+        expect(reachableTiles.length).toBe(9);
+
+        var reachableTiles = movableBoard.getAllReachableTilesFrom(movableBoard.getTile(2, 0));
+        expect(reachableTiles.length).toBe(20);
 
         done();
     });
