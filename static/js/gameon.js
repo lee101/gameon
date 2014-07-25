@@ -1093,6 +1093,9 @@ window.gameon = new (function () {
         starSelf.getScore = function () {
             return starSelf._score;
         };
+        starSelf.setCenterMessage = function (message) {
+            starSelf.$target.find('.gameon-starbar__center-message').html(message);
+        };
         starSelf.addTimeBonus = function (totalTime, timeLeft) {
             var averageScorePerMove = Math.ceil(starSelf.movesScores.average());
             var averageNumMovesPerSecond = starSelf.movesScores.length / totalTime;
