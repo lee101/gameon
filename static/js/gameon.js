@@ -478,6 +478,10 @@ window.gameon = new (function () {
             tile.isTile = function () {
                 return typeof this['render'] === 'function';
             };
+
+            tile.getRenderedTile = function () {
+                return boardSelf.getRenderedTile(this.yPos, this.xPos)
+            };
         };
 
         boardSelf.getY = function (i) {
