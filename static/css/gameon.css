@@ -225,6 +225,9 @@
 .gameon-starbar__center-message {
   font-size: 18px;
   font-weight: bold;
+  position: relative;
+  height: 0;
+  top: -20px;
 }
 .gameon-starbar__stars {
   padding: 2px;
