@@ -32,6 +32,17 @@ var specHelpers = new (function () {
             }
         };
         beforeEach(calledOnceFunc);
+    };
+
+    self.onceFunction = $.noop;
+    self.once = function(fun) {
+        if (typeof fun == 'undefined') {
+            self.onceFunction();
+            self.onceFunction = $.noop;
+        }
+        else {
+            self.onceFunction = fun;
+        }
     }
 
 })();
