@@ -288,6 +288,13 @@ window.gameon = new (function () {
             user.saveMute(0);
         });
     };
+    self.muteSound = function (name) {
+        soundManager.mute(name);
+    };
+
+    self.unmuteSound = function (name) {
+        soundManager.unmute(name);
+    };
 
     //TODO TEST clicks
     self.muteClick = function () {
