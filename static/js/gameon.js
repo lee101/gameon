@@ -1201,8 +1201,15 @@ window.gameon = new (function () {
 
     self.unlock = function (target) {
         var $button = $(target).find('button');
-        $button.removeAttr('disabled');
-        $button.find('.glyphicon-lock').remove();
+        if ($button.length > 0) {
+            $button.removeAttr('disabled');
+            $button.find('.glyphicon-lock').remove();
+        }
+        else{
+            var $button = $(target);
+            $button.removeClass('disabled');
+            $button.find('.glyphicon-lock').remove();
+        }
     };
     self.isLocked = function (target) {
         var $button = $(target).find('button');
