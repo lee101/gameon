@@ -253,9 +253,13 @@ and (min-height: 750px) {
 /* =======    bootstrap overrides ======== */
 
 .gameon-btn-hg {
-    font-size: 28px;
+    font-size: 18px;
 }
-
+@media (min-width: 310px) and (min-height: 380px) {
+    .gameon-btn-hg {
+        font-size: 28px;
+    }
+}
 /* Star rating slider overrides */
 
 .slider > .track, .slider > .highlight-track {
