@@ -1,4 +1,10 @@
 var GameOnUser = function (userJSON) {
+    if (!userJSON) {
+        userJSON = {};
+    }
+    if (typeof userJSON.scores == 'undefined') {
+        userJSON.scores = [];
+    }
 
     userJSON.saveScore = function (game_mode, score, callback) {
         if (typeof callback == 'undefined') {
@@ -346,8 +352,8 @@ window.gameon = new (function () {
 
     // ===================       Clock       ===============================
 
-    self.clock = new (function () {
-        var self = this;
+    self.clock = function (gameOver, startSeconds) {
+        var self = {};
 
         self.init = function (gameOver, startSeconds) {
             if (!startSeconds) {
@@ -412,8 +418,8 @@ window.gameon = new (function () {
             }
         }, 1000);
 
-        return self.init;
-    })();
+        return self.init(gameOver, startSeconds);
+    };
 
     // =====================       Board            ===========================
     var numBoards = 0;
@@ -1205,7 +1211,7 @@ window.gameon = new (function () {
             $button.removeAttr('disabled');
             $button.find('.glyphicon-lock').remove();
         }
-        else{
+        else {
             var $button = $(target);
             $button.removeClass('disabled');
             $button.find('.glyphicon-lock').remove();
