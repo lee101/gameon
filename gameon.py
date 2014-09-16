@@ -106,11 +106,11 @@ class BaseHandler(webapp2.RequestHandler):
             anon_user = User.byId(anonymous_cookie)
             if anon_user:
                 return anon_user
-            cookie_value = utils.random_string()
-            self.response.set_cookie('wsuser', cookie_value, max_age=15724800)
+            # cookie_value = utils.random_string()
+            # self.response.set_cookie('wsuser', cookie_value, max_age=15724800)
             anon_user = User()
             anon_user.cookie_user = 1
-            anon_user.id = cookie_value
+            anon_user.id = anonymous_cookie
             anon_user.put()
             return anon_user
 
