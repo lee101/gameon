@@ -38,8 +38,14 @@
   padding: 0;
 }
 .gameon-board--small-tiles td {
-  width: 40px;
-  height: 40px;
+  width: 0;
+  height: 0;
+}
+@media (min-width: 275px) {
+  .gameon-board--small-tiles td {
+    width: 40px;
+    height: 40px;
+  }
 }
 .gameon-board--small-tiles .btn-lg {
   width: 30px;
