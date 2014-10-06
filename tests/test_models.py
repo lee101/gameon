@@ -9,10 +9,10 @@ import sys
 from dev_appserver import EXTRA_PATHS
 sys.path = EXTRA_PATHS + sys.path
 
-from google.appengine.tools import dev_appserver
+# from google.appengine.tools import dev_appserver
 from google.appengine.tools.dev_appserver_main import ParseArguments
 args, option_dict = ParseArguments(sys.argv) # Otherwise the option_dict isn't populated.
-dev_appserver.SetupStubs('local', **option_dict)
+# dev_appserver.SetupStubs('local', **option_dict)
 
 from google.appengine.api import memcache
 ##
