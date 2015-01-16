@@ -495,6 +495,9 @@ window.gameon = new (function () {
             tile.getRenderedTile = function () {
                 return boardSelf.getRenderedTile(this.yPos, this.xPos)
             };
+            tile.getRenderedCell = function () {
+                return boardSelf.getRenderedCell(this.yPos, this.xPos)
+            };
         };
 
         boardSelf.getY = function (i) {
@@ -580,6 +583,10 @@ window.gameon = new (function () {
 
         boardSelf.getRenderedTile = function (y, x) {
             return $('[data-yx="' + boardSelf.name + '-' + y + '-' + x + '"]');
+        };
+
+        boardSelf.getRenderedCell = function (y, x) {
+            return boardSelf.getRenderedTile(y,x).parent('td');
         };
 
         boardSelf.click = function (elm) {
