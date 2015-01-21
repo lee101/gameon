@@ -586,7 +586,7 @@ window.gameon = new (function () {
         };
 
         boardSelf.getRenderedCell = function (y, x) {
-            return boardSelf.getRenderedTile(y,x).parent('td');
+            return boardSelf.getRenderedTile(y, x).parent('td');
         };
 
         boardSelf.click = function (elm) {
@@ -642,9 +642,12 @@ window.gameon = new (function () {
             return boardSelf.$target.find('tr:nth-child(' + (y + 1) + ') td:nth-child(' + (x + 1) + ')');
         };
 
-        boardSelf.getPathFromTo = function (startTile, endTile) {
+        boardSelf.getPathFromTo = function (startTile, endTile, diagonalAllowed) {
             if (!startTile || !endTile) {
                 return null;
+            }
+            if (typeof diagonalAllowed == 'undefined') {
+                diagonalAllowed = false;
             }
 
             var start = [startTile.yPos, startTile.xPos];
@@ -663,6 +666,15 @@ window.gameon = new (function () {
 
             var queue = new Queue(),
                 next = start;
+
+            function visit() {
+                if (boardSelf.isInBoard(currYPos, currXPos) && !seen[currYPos][currXPos] && boardSelf.getTile(currYPos, currXPos).canPassThrough) {
+                    seen[currYPos][currXPos] = true;
+                    previous[currYPos][currXPos] = [ypos, xpos];
+                    queue.enqueue([currYPos, currXPos])
+                }
+            }
+
             while (next) {
                 var xpos = next[1];
                 var ypos = next[0];
@@ -670,29 +682,28 @@ window.gameon = new (function () {
                 //left right up down
                 var currXPos = xpos - 1;
                 var currYPos = ypos;
-                if (boardSelf.isInBoard(currYPos, currXPos) && !seen[currYPos][currXPos] && boardSelf.getTile(currYPos, currXPos).canPassThrough) {
-                    seen[currYPos][currXPos] = true;
-                    previous[currYPos][currXPos] = [ypos, xpos];
-                    queue.enqueue([currYPos, currXPos])
-                }
+                visit();
                 currXPos = xpos + 1;
-                if (boardSelf.isInBoard(currYPos, currXPos) && !seen[currYPos][currXPos] && boardSelf.getTile(currYPos, currXPos).canPassThrough) {
-                    seen[currYPos][currXPos] = true;
-                    previous[currYPos][currXPos] = [ypos, xpos];
-                    queue.enqueue([currYPos, currXPos])
-                }
+                visit();
                 currXPos = xpos;
                 currYPos = ypos - 1;
-                if (boardSelf.isInBoard(currYPos, currXPos) && !seen[currYPos][currXPos] && boardSelf.getTile(currYPos, currXPos).canPassThrough) {
-                    seen[currYPos][currXPos] = true;
-                    previous[currYPos][currXPos] = [ypos, xpos];
-                    queue.enqueue([currYPos, currXPos])
-                }
+                visit();
                 currYPos = ypos + 1;
-                if (boardSelf.isInBoard(currYPos, currXPos) && !seen[currYPos][currXPos] && boardSelf.getTile(currYPos, currXPos).canPassThrough) {
-                    seen[currYPos][currXPos] = true;
-                    previous[currYPos][currXPos] = [ypos, xpos];
-                    queue.enqueue([currYPos, currXPos])
+                visit();
+
+                if (diagonalAllowed) {
+                    currXPos = xpos - 1;
+                    currYPos = ypos - 1;
+                    visit();
+                    currXPos = xpos + 1;
+                    currYPos = ypos - 1;
+                    visit();
+                    currXPos = xpos - 1;
+                    currYPos = ypos + 1;
+                    visit();
+                    currXPos = xpos - 1;
+                    currYPos = ypos - 1;
+                    visit();
                 }
 
                 next = queue.dequeue();
@@ -782,25 +793,18 @@ window.gameon = new (function () {
                 var currentPos = timescalled;
                 var nextPos = timescalled + 1;
 
+                var newcss = {};
                 if (path[currentPos][1] > path[nextPos][1]) {
-                    var newcss = {
-                        left: '-=' + cellWidth
-                    }
+                    newcss['left'] = '-=' + cellWidth
                 }
                 if (path[currentPos][1] < path[nextPos][1]) {
-                    var newcss = {
-                        left: '+=' + cellWidth
-                    }
+                    newcss['left'] = '+=' + cellWidth
                 }
                 if (path[currentPos][0] > path[nextPos][0]) {
-                    var newcss = {
-                        top: '-=' + cellWidth
-                    }
+                    newcss['top'] = '-=' + cellWidth
                 }
                 if (path[currentPos][0] < path[nextPos][0]) {
-                    var newcss = {
-                        top: '+=' + cellWidth
-                    }
+                    newcss['top'] = '+=' + cellWidth
                 }
                 timescalled++;
                 var stopping = timescalled >= path.length - 1;
