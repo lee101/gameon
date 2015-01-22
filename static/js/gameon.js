@@ -692,8 +692,8 @@ window.gameon = new (function () {
                 visit();
 
                 if (diagonalAllowed) {
-                    currXPos = xpos - 1;
-                    currYPos = ypos - 1;
+                    currXPos = xpos + 1;
+                    currYPos = ypos + 1;
                     visit();
                     currXPos = xpos + 1;
                     currYPos = ypos - 1;
