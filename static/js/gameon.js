@@ -469,6 +469,9 @@ window.gameon = new (function () {
             if (!tile.canPassThrough) {
                 tile.canPassThrough = false;
             }
+            tile.toString = function () {
+                return tile.yPos + '-' + tile.xPos;
+            };
             tile.tileRender = function () {
                 var renderedData;
                 if (typeof this['render'] === 'function') {
