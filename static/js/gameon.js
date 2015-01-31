@@ -786,6 +786,9 @@ window.gameon = new (function () {
         };
 
         boardSelf.animateTileAlongPath = function (tile, path, animationSpeed, callback) {
+            if (self.noAnimation) {
+                animationSpeed = 0;
+            }
 
             var timescalled = 0;
             var cellWidth = boardSelf.$target.find('td').outerWidth();
@@ -874,6 +877,9 @@ window.gameon = new (function () {
             //refreshui
             var tiledist = boardSelf.$target.find('td').outerHeight();
             var falltime = 0.20;
+            if (self.noAnimation) {
+                falltime = 0;
+            }
             var maxNumDeletedPerColumn = 0;
             var newTileNum = 0;
             for (var w = 0; w < boardSelf.width; w++) {
