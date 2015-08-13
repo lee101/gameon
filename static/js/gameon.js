@@ -1194,10 +1194,10 @@ window.gameon = new (function () {
             for (var i = 0; i < 3; i++) {
                 var thresh = starSelf.ratingScheme[i];
                 if (starSelf.score >= thresh) {
-                    output.push('<span class="gameon-star gameon-star--shiny gameon-star--' + i + '"></span>');
+                    output.push('<span class="fa gameon-star gameon-star--shiny gameon-star--' + i + '"></span>');
                 }
                 else {
-                    output.push('<span class="gameon-star gameon-star--' + i + '"></span>');
+                    output.push('<span class="fa gameon-star gameon-star--' + i + '"></span>');
                 }
             }
             output.push('</div>');
