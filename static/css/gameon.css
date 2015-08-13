@@ -324,6 +324,7 @@
 }
 .gameon-star--shiny {
   color: #FFEF35;
+  text-shadow: 0 0 #ffd700, 1px -1px 0 #ffd700, -1px 1px 0 #ffd700, 1px 1px 0 #ffd700;
 }
 .gameon-star--shiny:before {
   content: "\f005";
