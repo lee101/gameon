@@ -220,7 +220,7 @@ window.gameon = new (function () {
 
     soundManager.setup({
         // where to find the SWF files, if needed
-        url: '/gameon/static/js/lib/soundmanager/script',
+        url: '/gameon/static/js/lib/soundmanager/swf',
         onready: function () {
             // SM2 has loaded, API ready to use e.g., createSound() etc.
         },
@@ -238,11 +238,27 @@ window.gameon = new (function () {
             });
         });
     };
+
     self.loadSound("doublepoints", '/gameon/static/music/doublepoints.m4a');
 
-    self.playSound = function (name) {
+    self.getSoundPosition = function (name) {
+        return soundManager.getSoundById(name).position;
+    };
+
+    self.isPlaying = function (name) {
+        return soundManager.getSoundById(name).playState == 1;
+    };
+    self.playSound = function (name, callback) {
+        if (typeof callback == 'undefined') {
+            callback = function () {
+            };
+        }
         soundManager.onready(function () {
-            soundManager.play(name);
+            soundManager.play(name, {
+                onfinish: function () {
+                    callback();
+                }
+            });
         });
     };
 
@@ -280,6 +296,19 @@ window.gameon = new (function () {
 //            sound.play({loops:999999});
         });
     };
+    self.loopSoundAtPosition = function (name, position) {
+        soundManager.onready(function () {
+            var sound = soundManager.getSoundById(name);
+
+            soundManager.play(name, {
+                position: position,
+                onfinish: function () {
+                    _loopSound(sound);
+                }
+            }).setPosition(position);
+        });
+    };
+
 
     self.mute = function () {
         soundManager.mute();
