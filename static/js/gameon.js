@@ -305,7 +305,7 @@ window.gameon = new (function () {
                 onfinish: function () {
                     _loopSound(sound);
                 }
-            }).setPosition(position);
+            });
         });
     };
 
