@@ -501,7 +501,7 @@ window.gameon = new (function () {
             tile.toString = function () {
                 return tile.yPos + '-' + tile.xPos;
             };
-            tile.tileRender = function () {
+            tile.tileRender = function (extraCss) {
                 var renderedData;
                 if (typeof this['render'] === 'function') {
                     renderedData = $(this.render());
@@ -512,6 +512,9 @@ window.gameon = new (function () {
                 renderedData.attr('onmousedown', 'gameon.boards.' + boardSelf.name + '.click(this)');
                 renderedData.attr('data-yx', boardSelf.name + '-' + this.yPos + '-' + this.xPos);
                 renderedData.css({position: 'relative'});
+                if (typeof extraCss == "object") {
+                    renderedData.css(extraCss);
+                }
                 return renderedData[0].outerHTML;
             };
             tile.reRender = function () {
@@ -958,13 +961,7 @@ window.gameon = new (function () {
 
                     var fallDistance = numDeleted * tiledist;
 
-                    var renderedData = $(currNewTile.render());
-                    renderedData.attr('onmousedown', 'gameon.boards.' + boardSelf.name + '.click(this)');
-                    renderedData.attr('data-yx', boardSelf.name + '-' + h + '-' + w);
-                    renderedData.css({position: 'relative'});
-                    renderedData.css({top: -fallDistance});
-
-                    container.html(renderedData[0].outerHTML);
+                    container.html(currNewTile.tileRender({top: -fallDistance}));
                     var renderedTile = boardSelf.getRenderedTile(h, w);
                     renderedTile.animate({top: '+=' + fallDistance}, tiledist / (falltime / numDeleted));
                 }
