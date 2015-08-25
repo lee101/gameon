@@ -509,13 +509,18 @@ window.gameon = new (function () {
                 else {
                     renderedData = $('<div></div>');
                 }
-                renderedData.attr('onmousedown', 'gameon.boards.' + boardSelf.name + '.click(this)');
+                renderedData.on('mousedown touchstart', function (evt) {
+                    evt.preventDefault();
+                    evt.stopPropagation();
+                    gameon.boards[boardSelf.name].click(renderedData);
+                });
+
                 renderedData.attr('data-yx', boardSelf.name + '-' + this.yPos + '-' + this.xPos);
                 renderedData.css({position: 'relative'});
                 if (typeof extraCss == "object") {
                     renderedData.css(extraCss);
                 }
-                return renderedData[0].outerHTML;
+                return renderedData;
             };
             tile.reRender = function () {
                 var renderedTile = boardSelf.getRenderedTile(this.yPos, this.xPos);
@@ -644,33 +649,31 @@ window.gameon = new (function () {
                 }
             }
             boardSelf.$target = $(target);
-            var domtable = [];
+            var $domtable = $('<table></table>');
             var popups = boardSelf.$target.find('.gameon-board-popups');
             if (!popups.length) {
-                domtable.push('<div class="gameon-board-popups"></div>');
+                boardSelf.$target.append('<div class="gameon-board-popups"></div>');
             }
-            domtable.push('<table>');
             for (var h = 0; h < boardSelf.height; h++) {
-                domtable.push("<tr>");
+                var $currentRow = $('<tr></tr>');
                 for (var w = 0; w < boardSelf.width; w++) {
                     var even = 'odd';
                     if ((h + w) % 2 === 0) {
                         even = 'even';
                     }
-                    domtable.push('<td class="' + even + '">');
+                    var $currentCell = $('<td class="' + even + '"></td>');
 
                     var tile = boardSelf.getTile(h, w);
                     if (typeof tile !== 'undefined' && typeof tile['tileRender'] === 'function') {
-                        domtable.push(tile.tileRender());
+                        $currentCell.append(tile.tileRender());
                     }
 
-                    domtable.push("</td>");
+                    $currentRow.append($currentCell);
                 }
-                domtable.push("</tr>");
+                $domtable.append($currentRow);
             }
-            domtable.push('</table>');
             boardSelf.$target.find('table').remove();
-            boardSelf.$target.append(domtable.join(''));
+            boardSelf.$target.append($domtable);
         };
 
         boardSelf.getContainerAt = function (y, x) {
