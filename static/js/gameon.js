@@ -241,6 +241,18 @@ window.gameon = new (function () {
 
     self.loadSound("doublepoints", '/gameon/static/music/doublepoints.m4a');
 
+    soundManager.onready(function () {
+        var sound = soundManager.getSoundById("doublepoints");
+        if (sound.isHTML5) {
+            var html5audio = new Audio();
+            html5audio.volume = 0.34;
+            if (html5audio.volume != 0.34) {
+                self.noAudioChange = true;
+            }
+        }
+
+    });
+
     self.getSoundPosition = function (name) {
         return soundManager.getSoundById(name).position;
     };
@@ -346,6 +358,9 @@ window.gameon = new (function () {
     self.renderVolumeTo = function (target) {
         var $target = $(target);
         var $volumeControl = $('.gameon-volume-template .gameon-volume').detach();
+        if (self.noAudioChange) {
+            return;
+        }
         $volumeControl.appendTo($target);
 
         $target.bind('destroyed', function () {
