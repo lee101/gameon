@@ -220,7 +220,7 @@ window.gameon = new (function () {
 
     soundManager.setup({
         // where to find the SWF files, if needed
-        url: '/gameon/static/js/lib/soundmanager/script',
+        url: '/gameon/static/js/lib/soundmanager/swf',
         onready: function () {
             // SM2 has loaded, API ready to use e.g., createSound() etc.
         },
@@ -238,11 +238,27 @@ window.gameon = new (function () {
             });
         });
     };
+
     self.loadSound("doublepoints", '/gameon/static/music/doublepoints.m4a');
 
-    self.playSound = function (name) {
+    self.getSoundPosition = function (name) {
+        return soundManager.getSoundById(name).position;
+    };
+
+    self.isPlaying = function (name) {
+        return soundManager.getSoundById(name).playState == 1;
+    };
+    self.playSound = function (name, callback) {
+        if (typeof callback == 'undefined') {
+            callback = function () {
+            };
+        }
         soundManager.onready(function () {
-            soundManager.play(name);
+            soundManager.play(name, {
+                onfinish: function () {
+                    callback();
+                }
+            });
         });
     };
 
@@ -280,6 +296,19 @@ window.gameon = new (function () {
 //            sound.play({loops:999999});
         });
     };
+    self.loopSoundAtPosition = function (name, position) {
+        soundManager.onready(function () {
+            var sound = soundManager.getSoundById(name);
+
+            soundManager.play(name, {
+                position: position,
+                onfinish: function () {
+                    _loopSound(sound);
+                }
+            });
+        });
+    };
+
 
     self.mute = function () {
         soundManager.mute();
@@ -469,7 +498,10 @@ window.gameon = new (function () {
             if (!tile.canPassThrough) {
                 tile.canPassThrough = false;
             }
-            tile.tileRender = function () {
+            tile.toString = function () {
+                return tile.yPos + '-' + tile.xPos;
+            };
+            tile.tileRender = function (extraCss) {
                 var renderedData;
                 if (typeof this['render'] === 'function') {
                     renderedData = $(this.render());
@@ -477,10 +509,18 @@ window.gameon = new (function () {
                 else {
                     renderedData = $('<div></div>');
                 }
-                renderedData.attr('onmousedown', 'gameon.boards.' + boardSelf.name + '.click(this)');
+                renderedData.on('mousedown touchstart', function (evt) {
+                    evt.preventDefault();
+                    evt.stopPropagation();
+                    gameon.boards[boardSelf.name].click(renderedData);
+                });
+
                 renderedData.attr('data-yx', boardSelf.name + '-' + this.yPos + '-' + this.xPos);
                 renderedData.css({position: 'relative'});
-                return renderedData[0].outerHTML;
+                if (typeof extraCss == "object") {
+                    renderedData.css(extraCss);
+                }
+                return renderedData;
             };
             tile.reRender = function () {
                 var renderedTile = boardSelf.getRenderedTile(this.yPos, this.xPos);
@@ -494,6 +534,9 @@ window.gameon = new (function () {
 
             tile.getRenderedTile = function () {
                 return boardSelf.getRenderedTile(this.yPos, this.xPos)
+            };
+            tile.getRenderedCell = function () {
+                return boardSelf.getRenderedCell(this.yPos, this.xPos)
             };
         };
 
@@ -582,6 +625,10 @@ window.gameon = new (function () {
             return $('[data-yx="' + boardSelf.name + '-' + y + '-' + x + '"]');
         };
 
+        boardSelf.getRenderedCell = function (y, x) {
+            return boardSelf.getRenderedTile(y, x).parent('td');
+        };
+
         boardSelf.click = function (elm) {
             var yx = $(elm).attr('data-yx').split('-');
             var y = +yx[1];
@@ -602,42 +649,43 @@ window.gameon = new (function () {
                 }
             }
             boardSelf.$target = $(target);
-            var domtable = [];
+            var $domtable = $('<table></table>');
             var popups = boardSelf.$target.find('.gameon-board-popups');
             if (!popups.length) {
-                domtable.push('<div class="gameon-board-popups"></div>');
+                boardSelf.$target.append('<div class="gameon-board-popups"></div>');
             }
-            domtable.push('<table>');
             for (var h = 0; h < boardSelf.height; h++) {
-                domtable.push("<tr>");
+                var $currentRow = $('<tr></tr>');
                 for (var w = 0; w < boardSelf.width; w++) {
                     var even = 'odd';
                     if ((h + w) % 2 === 0) {
                         even = 'even';
                     }
-                    domtable.push('<td class="' + even + '">');
+                    var $currentCell = $('<td class="' + even + '"></td>');
 
                     var tile = boardSelf.getTile(h, w);
                     if (typeof tile !== 'undefined' && typeof tile['tileRender'] === 'function') {
-                        domtable.push(tile.tileRender());
+                        $currentCell.append(tile.tileRender());
                     }
 
-                    domtable.push("</td>");
+                    $currentRow.append($currentCell);
                 }
-                domtable.push("</tr>");
+                $domtable.append($currentRow);
             }
-            domtable.push('</table>');
             boardSelf.$target.find('table').remove();
-            boardSelf.$target.append(domtable.join(''));
+            boardSelf.$target.append($domtable);
         };
 
         boardSelf.getContainerAt = function (y, x) {
             return boardSelf.$target.find('tr:nth-child(' + (y + 1) + ') td:nth-child(' + (x + 1) + ')');
         };
 
-        boardSelf.getPathFromTo = function (startTile, endTile) {
+        boardSelf.getPathFromTo = function (startTile, endTile, diagonalAllowed) {
             if (!startTile || !endTile) {
                 return null;
+            }
+            if (typeof diagonalAllowed == 'undefined') {
+                diagonalAllowed = false;
             }
 
             var start = [startTile.yPos, startTile.xPos];
@@ -656,6 +704,15 @@ window.gameon = new (function () {
 
             var queue = new Queue(),
                 next = start;
+
+            function visit() {
+                if (boardSelf.isInBoard(currYPos, currXPos) && !seen[currYPos][currXPos] && boardSelf.getTile(currYPos, currXPos).canPassThrough) {
+                    seen[currYPos][currXPos] = true;
+                    previous[currYPos][currXPos] = [ypos, xpos];
+                    queue.enqueue([currYPos, currXPos])
+                }
+            }
+
             while (next) {
                 var xpos = next[1];
                 var ypos = next[0];
@@ -663,29 +720,28 @@ window.gameon = new (function () {
                 //left right up down
                 var currXPos = xpos - 1;
                 var currYPos = ypos;
-                if (boardSelf.isInBoard(currYPos, currXPos) && !seen[currYPos][currXPos] && boardSelf.getTile(currYPos, currXPos).canPassThrough) {
-                    seen[currYPos][currXPos] = true;
-                    previous[currYPos][currXPos] = [ypos, xpos];
-                    queue.enqueue([currYPos, currXPos])
-                }
+                visit();
                 currXPos = xpos + 1;
-                if (boardSelf.isInBoard(currYPos, currXPos) && !seen[currYPos][currXPos] && boardSelf.getTile(currYPos, currXPos).canPassThrough) {
-                    seen[currYPos][currXPos] = true;
-                    previous[currYPos][currXPos] = [ypos, xpos];
-                    queue.enqueue([currYPos, currXPos])
-                }
+                visit();
                 currXPos = xpos;
                 currYPos = ypos - 1;
-                if (boardSelf.isInBoard(currYPos, currXPos) && !seen[currYPos][currXPos] && boardSelf.getTile(currYPos, currXPos).canPassThrough) {
-                    seen[currYPos][currXPos] = true;
-                    previous[currYPos][currXPos] = [ypos, xpos];
-                    queue.enqueue([currYPos, currXPos])
-                }
+                visit();
                 currYPos = ypos + 1;
-                if (boardSelf.isInBoard(currYPos, currXPos) && !seen[currYPos][currXPos] && boardSelf.getTile(currYPos, currXPos).canPassThrough) {
-                    seen[currYPos][currXPos] = true;
-                    previous[currYPos][currXPos] = [ypos, xpos];
-                    queue.enqueue([currYPos, currXPos])
+                visit();
+
+                if (diagonalAllowed) {
+                    currXPos = xpos + 1;
+                    currYPos = ypos + 1;
+                    visit();
+                    currXPos = xpos + 1;
+                    currYPos = ypos - 1;
+                    visit();
+                    currXPos = xpos - 1;
+                    currYPos = ypos + 1;
+                    visit();
+                    currXPos = xpos - 1;
+                    currYPos = ypos - 1;
+                    visit();
                 }
 
                 next = queue.dequeue();
@@ -765,6 +821,9 @@ window.gameon = new (function () {
         };
 
         boardSelf.animateTileAlongPath = function (tile, path, animationSpeed, callback) {
+            if (self.noAnimation) {
+                animationSpeed = 0;
+            }
 
             var timescalled = 0;
             var cellWidth = boardSelf.$target.find('td').outerWidth();
@@ -775,25 +834,18 @@ window.gameon = new (function () {
                 var currentPos = timescalled;
                 var nextPos = timescalled + 1;
 
+                var newcss = {};
                 if (path[currentPos][1] > path[nextPos][1]) {
-                    var newcss = {
-                        left: '-=' + cellWidth
-                    }
+                    newcss['left'] = '-=' + cellWidth
                 }
                 if (path[currentPos][1] < path[nextPos][1]) {
-                    var newcss = {
-                        left: '+=' + cellWidth
-                    }
+                    newcss['left'] = '+=' + cellWidth
                 }
                 if (path[currentPos][0] > path[nextPos][0]) {
-                    var newcss = {
-                        top: '-=' + cellWidth
-                    }
+                    newcss['top'] = '-=' + cellWidth
                 }
                 if (path[currentPos][0] < path[nextPos][0]) {
-                    var newcss = {
-                        top: '+=' + cellWidth
-                    }
+                    newcss['top'] = '+=' + cellWidth
                 }
                 timescalled++;
                 var stopping = timescalled >= path.length - 1;
@@ -860,6 +912,9 @@ window.gameon = new (function () {
             //refreshui
             var tiledist = boardSelf.$target.find('td').outerHeight();
             var falltime = 0.20;
+            if (self.noAnimation) {
+                falltime = 0;
+            }
             var maxNumDeletedPerColumn = 0;
             var newTileNum = 0;
             for (var w = 0; w < boardSelf.width; w++) {
@@ -909,13 +964,7 @@ window.gameon = new (function () {
 
                     var fallDistance = numDeleted * tiledist;
 
-                    var renderedData = $(currNewTile.render());
-                    renderedData.attr('onmousedown', 'gameon.boards.' + boardSelf.name + '.click(this)');
-                    renderedData.attr('data-yx', boardSelf.name + '-' + h + '-' + w);
-                    renderedData.css({position: 'relative'});
-                    renderedData.css({top: -fallDistance});
-
-                    container.html(renderedData[0].outerHTML);
+                    container.html(currNewTile.tileRender({top: -fallDistance}));
                     var renderedTile = boardSelf.getRenderedTile(h, w);
                     renderedTile.animate({top: '+=' + fallDistance}, tiledist / (falltime / numDeleted));
                 }
@@ -1194,10 +1243,10 @@ window.gameon = new (function () {
             for (var i = 0; i < 3; i++) {
                 var thresh = starSelf.ratingScheme[i];
                 if (starSelf.score >= thresh) {
-                    output.push('<span class="gameon-star gameon-star--shiny gameon-star--' + i + '"></span>');
+                    output.push('<span class="fa gameon-star gameon-star--shiny gameon-star--' + i + '"></span>');
                 }
                 else {
-                    output.push('<span class="gameon-star gameon-star--' + i + '"></span>');
+                    output.push('<span class="fa gameon-star gameon-star--' + i + '"></span>');
                 }
             }
             output.push('</div>');

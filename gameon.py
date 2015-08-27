@@ -223,7 +223,7 @@ class makeGoldHandler(BaseHandler):
         else:
             User.buyFor(self.current_user.id)
             ##TODOFIX
-            self.redirect("/campaign")
+            self.redirect("/play")
 
 
 class SaveVolumeHandler(BaseHandler):
