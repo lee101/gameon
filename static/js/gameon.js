@@ -954,7 +954,7 @@ window.gameon = new (function () {
     };
 
     self.ArrayView = function (arr) {
-        var viewSelf = this;
+        var viewSelf = {};
         if (typeof arr === 'undefined') {
             arr = []
         }
