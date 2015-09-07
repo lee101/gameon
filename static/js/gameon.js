@@ -785,9 +785,9 @@ window.gameon = new (function () {
             }
         };
 
-        boardSelf.animateTileAlongPath = function (tile, path, animationSpeed, callback) {
+        boardSelf.animateTileAlongPath = function (tile, path, animationTime, callback) {
             if (self.noAnimation) {
-                animationSpeed = 0;
+                animationTime = 0;
             }
 
             var timescalled = 0;
@@ -817,12 +817,12 @@ window.gameon = new (function () {
 
                 var $renderedTile = boardSelf.getRenderedTile(tile.yPos, tile.xPos);
                 if (!stopping) {
-                    $renderedTile.animate(newcss, animationSpeed, handleAnimation);
+                    $renderedTile.animate(newcss, animationTime, handleAnimation);
                 }
 
                 if (stopping) {
                     //last time
-                    $renderedTile.animate(newcss, animationSpeed, function () {
+                    $renderedTile.animate(newcss, animationTime, function () {
                         //stop animation
                         $renderedTile.css({
                             left: '0px',
