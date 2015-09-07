@@ -220,7 +220,7 @@ window.gameon = new (function () {
 
     soundManager.setup({
         // where to find the SWF files, if needed
-        url: '/gameon/static/js/lib/soundmanager/script',
+        url: '/gameon/static/js/lib/soundmanager/swf',
         onready: function () {
             // SM2 has loaded, API ready to use e.g., createSound() etc.
         },
@@ -238,11 +238,39 @@ window.gameon = new (function () {
             });
         });
     };
+
     self.loadSound("doublepoints", '/gameon/static/music/doublepoints.m4a');
 
-    self.playSound = function (name) {
+    soundManager.onready(function () {
+        var sound = soundManager.getSoundById("doublepoints");
+        if (sound.isHTML5) {
+            var html5audio = new Audio();
+            html5audio.volume = 0.34;
+            if (html5audio.volume != 0.34) {
+                self.noAudioChange = true;
+            }
+        }
+
+    });
+
+    self.getSoundPosition = function (name) {
+        return soundManager.getSoundById(name).position;
+    };
+
+    self.isPlaying = function (name) {
+        return soundManager.getSoundById(name).playState == 1;
+    };
+    self.playSound = function (name, callback) {
+        if (typeof callback == 'undefined') {
+            callback = function () {
+            };
+        }
         soundManager.onready(function () {
-            soundManager.play(name);
+            soundManager.play(name, {
+                onfinish: function () {
+                    callback();
+                }
+            });
         });
     };
 
@@ -280,6 +308,19 @@ window.gameon = new (function () {
 //            sound.play({loops:999999});
         });
     };
+    self.loopSoundAtPosition = function (name, position) {
+        soundManager.onready(function () {
+            var sound = soundManager.getSoundById(name);
+
+            soundManager.play(name, {
+                position: position,
+                onfinish: function () {
+                    _loopSound(sound);
+                }
+            });
+        });
+    };
+
 
     self.mute = function () {
         soundManager.mute();
@@ -317,6 +358,9 @@ window.gameon = new (function () {
     self.renderVolumeTo = function (target) {
         var $target = $(target);
         var $volumeControl = $('.gameon-volume-template .gameon-volume').detach();
+        if (self.noAudioChange) {
+            return;
+        }
         $volumeControl.appendTo($target);
 
         $target.bind('destroyed', function () {
@@ -472,7 +516,7 @@ window.gameon = new (function () {
             tile.toString = function () {
                 return tile.yPos + '-' + tile.xPos;
             };
-            tile.tileRender = function () {
+            tile.tileRender = function (extraCss) {
                 var renderedData;
                 if (typeof this['render'] === 'function') {
                     renderedData = $(this.render());
@@ -480,10 +524,18 @@ window.gameon = new (function () {
                 else {
                     renderedData = $('<div></div>');
                 }
-                renderedData.attr('onmousedown', 'gameon.boards.' + boardSelf.name + '.click(this)');
+                renderedData.on('mousedown touchstart', function (evt) {
+                    evt.preventDefault();
+                    evt.stopPropagation();
+                    gameon.boards[boardSelf.name].click(renderedData);
+                });
+
                 renderedData.attr('data-yx', boardSelf.name + '-' + this.yPos + '-' + this.xPos);
                 renderedData.css({position: 'relative'});
-                return renderedData[0].outerHTML;
+                if (typeof extraCss == "object") {
+                    renderedData.css(extraCss);
+                }
+                return renderedData;
             };
             tile.reRender = function () {
                 var renderedTile = boardSelf.getRenderedTile(this.yPos, this.xPos);
@@ -612,33 +664,31 @@ window.gameon = new (function () {
                 }
             }
             boardSelf.$target = $(target);
-            var domtable = [];
+            var $domtable = $('<table></table>');
             var popups = boardSelf.$target.find('.gameon-board-popups');
             if (!popups.length) {
-                domtable.push('<div class="gameon-board-popups"></div>');
+                boardSelf.$target.append('<div class="gameon-board-popups"></div>');
             }
-            domtable.push('<table>');
             for (var h = 0; h < boardSelf.height; h++) {
-                domtable.push("<tr>");
+                var $currentRow = $('<tr></tr>');
                 for (var w = 0; w < boardSelf.width; w++) {
                     var even = 'odd';
                     if ((h + w) % 2 === 0) {
                         even = 'even';
                     }
-                    domtable.push('<td class="' + even + '">');
+                    var $currentCell = $('<td class="' + even + '"></td>');
 
                     var tile = boardSelf.getTile(h, w);
                     if (typeof tile !== 'undefined' && typeof tile['tileRender'] === 'function') {
-                        domtable.push(tile.tileRender());
+                        $currentCell.append(tile.tileRender());
                     }
 
-                    domtable.push("</td>");
+                    $currentRow.append($currentCell);
                 }
-                domtable.push("</tr>");
+                $domtable.append($currentRow);
             }
-            domtable.push('</table>');
             boardSelf.$target.find('table').remove();
-            boardSelf.$target.append(domtable.join(''));
+            boardSelf.$target.append($domtable);
         };
 
         boardSelf.getContainerAt = function (y, x) {
@@ -929,13 +979,7 @@ window.gameon = new (function () {
 
                     var fallDistance = numDeleted * tiledist;
 
-                    var renderedData = $(currNewTile.render());
-                    renderedData.attr('onmousedown', 'gameon.boards.' + boardSelf.name + '.click(this)');
-                    renderedData.attr('data-yx', boardSelf.name + '-' + h + '-' + w);
-                    renderedData.css({position: 'relative'});
-                    renderedData.css({top: -fallDistance});
-
-                    container.html(renderedData[0].outerHTML);
+                    container.html(currNewTile.tileRender({top: -fallDistance}));
                     var renderedTile = boardSelf.getRenderedTile(h, w);
                     renderedTile.animate({top: '+=' + fallDistance}, tiledist / (falltime / numDeleted));
                 }
@@ -974,7 +1018,7 @@ window.gameon = new (function () {
     };
 
     self.ArrayView = function (arr) {
-        var viewSelf = this;
+        var viewSelf = {};
         if (typeof arr === 'undefined') {
             arr = []
         }
@@ -1214,10 +1258,10 @@ window.gameon = new (function () {
             for (var i = 0; i < 3; i++) {
                 var thresh = starSelf.ratingScheme[i];
                 if (starSelf.score >= thresh) {
-                    output.push('<span class="gameon-star gameon-star--shiny gameon-star--' + i + '"></span>');
+                    output.push('<span class="fa gameon-star gameon-star--shiny gameon-star--' + i + '"></span>');
                 }
                 else {
-                    output.push('<span class="gameon-star gameon-star--' + i + '"></span>');
+                    output.push('<span class="fa gameon-star gameon-star--' + i + '"></span>');
                 }
             }
             output.push('</div>');

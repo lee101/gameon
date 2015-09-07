@@ -320,10 +320,11 @@ and (min-height: 750px) {
     text-decoration: none;
     line-height: 50px;
     position: absolute;
+    pointer-events: none;
 }
 
 .gameon-starbar__star:before {
-    content: "\2606";
+    content: "\f006";
 }
 
 .gameon-starbar__bar {
@@ -345,6 +346,8 @@ and (min-height: 750px) {
     line-height: 40px;
     position: absolute;
     top: -13px;
+    text-shadow: 0 0 gold, 1px -1px 0 gold, -1px 1px 0 gold, 1px 1px 0 gold;
+    pointer-events: none;
 }
 
 .gameon-star--0 {
@@ -398,19 +401,20 @@ and (min-height: 750px) {
     }
 }
 
-.gameon-star:before {
-    content: "\2606";
+.gameon-star {
+    &:before {
+        content: "\f006"
+    }
 }
 
 .gameon-star--shiny {
-    /*color: #e3780e;*/
     color: #FFEF35;
-}
+    text-shadow: 0 0 gold, 1px -1px 0 gold, -1px 1px 0 gold, 1px 1px 0 gold;
 
-.gameon-star--shiny:before {
-    content: "\2605";
-    /*color: yellow;*/
-    /*font-size: 37px;*/
+    //from .fa-star
+    &:before {
+        content: "\f005"
+    }
 }
 
 .right {

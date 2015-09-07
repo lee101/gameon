@@ -255,9 +255,10 @@
   text-decoration: none;
   line-height: 50px;
   position: absolute;
+  pointer-events: none;
 }
 .gameon-starbar__star:before {
-  content: "\2606";
+  content: "\f006";
 }
 .gameon-starbar__bar {
   width: 100%;
@@ -276,6 +277,8 @@
   line-height: 40px;
   position: absolute;
   top: -13px;
+  text-shadow: 0 0 #ffd700, 1px -1px 0 #ffd700, -1px 1px 0 #ffd700, 1px 1px 0 #ffd700;
+  pointer-events: none;
 }
 .gameon-star--0 {
   left: -5px;
@@ -317,16 +320,14 @@
   }
 }
 .gameon-star:before {
-  content: "\2606";
+  content: "\f006";
 }
 .gameon-star--shiny {
-  /*color: #e3780e;*/
   color: #FFEF35;
+  text-shadow: 0 0 #ffd700, 1px -1px 0 #ffd700, -1px 1px 0 #ffd700, 1px 1px 0 #ffd700;
 }
 .gameon-star--shiny:before {
-  content: "\2605";
-  /*color: yellow;*/
-  /*font-size: 37px;*/
+  content: "\f005";
 }
 .right {
   float: right;
