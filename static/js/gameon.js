@@ -879,7 +879,6 @@ window.gameon = new (function () {
                             top: '0px'
                         });
 
-                        gameon.unblockUI();
                         callback();
                     })
 

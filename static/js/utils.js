@@ -9,8 +9,11 @@
 })(jQuery);
 
 window.gameon = window.gameon || {};
-window.gameon.blockUI = function () {
-    $.blockUI({ message: ''});
+window.gameon.blockUI = function (message) {
+    if (typeof message == "undefined") {
+        message = '';
+    }
+    $.blockUI({ message: message});
 };
 window.gameon.unblockUI = function () {
     $.unblockUI();
