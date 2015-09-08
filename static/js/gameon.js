@@ -885,7 +885,6 @@ window.gameon = new (function () {
                 }
             }
 
-            gameon.blockUI();
             handleAnimation();
         };
 
