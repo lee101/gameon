@@ -5,6 +5,13 @@ var GameOnUser = function (userJSON) {
     if (typeof userJSON.scores == 'undefined') {
         userJSON.scores = [];
     }
+    if (typeof userJSON.levels_unlocked == 'undefined') {
+        userJSON.levels_unlocked = 0;
+    }
+
+    if (typeof userJSON.difficulties_unlocked == 'undefined') {
+        userJSON.difficulties_unlocked = 0;
+    }
 
     userJSON.saveScore = function (game_mode, score, callback) {
         if (typeof callback == 'undefined') {
