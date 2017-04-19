@@ -964,7 +964,9 @@ window.gameon = new (function () {
 
                         renderedTile = boardSelf.getRenderedTile(endPos, w);
                         renderedTile.css({top: -fallDistance});
-                        renderedTile.animate({top: '+=' + fallDistance}, tiledist / (falltime / numDeleted));
+                        renderedTile.animate({top: '+=' + fallDistance}, tiledist / (falltime / numDeleted), {
+                            easing: 'easeOutBounce'
+                        });
 
 
                         //update our model
