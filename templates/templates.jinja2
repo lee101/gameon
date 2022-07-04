@@ -13,15 +13,7 @@
     <script type="text/javascript" src="/gameon/static/js/jquery-1.9.1.min.js"></script>
     <script type="text/javascript" src="/gameon/static/js/jquery.blockUI.js"></script>
 
-    <script type="text/javascript" src="/gameon/static/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 
-    <script type="text/javascript" src="/gameon/static/js/lib/soundmanager/script/soundmanager2.js"></script>
-    <script type="text/javascript"
-            src="/gameon/static/js/lib/loopj-jquery-simple-slider-fa64f59/js/simple-slider.min.js"></script>
-    <script type="text/javascript" src="/gameon/static/js/Queue.js"></script>
-    <script type="text/javascript" src="/gameon/static/js/utils.js"></script>
-    <script type="text/javascript" src="/gameon/static/js/wordutils.js"></script>
-    <script type="text/javascript" src="/gameon/static/js/gameon.js"></script>
 {%- endmacro %}
 
 {% macro volume() -%}
@@ -59,15 +51,15 @@
 
 
 {% macro templates() -%}
-    <div id="fb-root"></div>
-    <script>(function (d, s, id) {
-        var js, fjs = d.getElementsByTagName(s)[0];
-        if (d.getElementById(id)) return;
-        js = d.createElement(s);
-        js.id = id;
-        js.src = "//connect.facebook.net/en_GB/all.js#xfbml=1&appId=138831849632195";
-        fjs.parentNode.insertBefore(js, fjs);
-    }(document, 'script', 'facebook-jssdk'));</script>
+{#    <div id="fb-root"></div>#}
+{#    <script>(function (d, s, id) {#}
+{#        var js, fjs = d.getElementsByTagName(s)[0];#}
+{#        if (d.getElementById(id)) return;#}
+{#        js = d.createElement(s);#}
+{#        js.id = id;#}
+{#        js.src = "//connect.facebook.net/en_GB/all.js#xfbml=1&appId=138831849632195";#}
+{#        fjs.parentNode.insertBefore(js, fjs);#}
+{#    }(document, 'script', 'facebook-jssdk'));</script>#}
 
     <div class="gameon-volume-template">
         {{ volume() }}
