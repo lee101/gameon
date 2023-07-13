@@ -25,7 +25,13 @@ config = {'webapp2_extras.sessions': dict(secret_key='93986c9cdd240540f70efaea56
 
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)),
-    extensions=['jinja2.ext.autoescape'])
+    # extensions=['jinja2.ext.autoescape']
+)
+if GameOnUtils.debug:
+    GCLOUD_STATIC_BUCKET_URL = "/static"
+else:
+    GCLOUD_STATIC_BUCKET_URL = "https://static.bigmultiplayerchess.com/static"
+
 
 
 class BaseHandler(webapp2.RequestHandler):
@@ -123,6 +129,7 @@ class BaseHandler(webapp2.RequestHandler):
             # 'glogout_url': users.create_logout_url(self.request.uri),
             # 'url':self.request.uri,
             # 'num_levels': len(LEVELS)
+            'gameon_static_url': GCLOUD_STATIC_BUCKET_URL,
         }
         template_values.update(extraParams)
 

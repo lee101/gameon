@@ -1,27 +1,27 @@
 {% macro cssheaders() -%}
-    <link type="text/css" rel="stylesheet" href="/gameon/static/bower_components/bootstrap/dist/css/bootstrap.min.css"/>
-    <link type="text/css" rel="stylesheet" href="/gameon/static/bower_components/font-awesome/css/font-awesome.min.css"/>
+    <link type="text/css" rel="stylesheet" href="{{ gameon_static_url }}/bower_components/bootstrap/dist/css/bootstrap.min.css"/>
+    <link type="text/css" rel="stylesheet" href="{{ gameon_static_url }}/bower_components/font-awesome/css/font-awesome.min.css"/>
 
     <link type="text/css" rel="stylesheet"
-          href="/gameon/static/js/lib/loopj-jquery-simple-slider-fa64f59/css/simple-slider.css"/>
+          href="{{ gameon_static_url }}/js/lib/loopj-jquery-simple-slider-fa64f59/css/simple-slider.css"/>
     <link type="text/css" rel="stylesheet"
-          href="/gameon/static/js/lib/loopj-jquery-simple-slider-fa64f59/css/simple-slider-volume.css"/>
-    <link type="text/css" rel="stylesheet" href="/gameon/static/css/gameon.css"/>
+          href="{{ gameon_static_url }}/js/lib/loopj-jquery-simple-slider-fa64f59/css/simple-slider-volume.css"/>
+    <link type="text/css" rel="stylesheet" href="{{ gameon_static_url }}/css/gameon.css"/>
 {%- endmacro %}
 
 {% macro jsheaders() -%}
-    <script type="text/javascript" src="/gameon/static/js/jquery-1.9.1.min.js"></script>
-    <script type="text/javascript" src="/gameon/static/js/jquery.blockUI.js"></script>
+    <script type="text/javascript" src="{{ gameon_static_url }}/js/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="{{ gameon_static_url }}/js/jquery.blockUI.js"></script>
 
-    <script type="text/javascript" src="/gameon/static/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="{{ gameon_static_url }}/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 
-    <script type="text/javascript" src="/gameon/static/js/lib/soundmanager/script/soundmanager2.js"></script>
+    <script type="text/javascript" src="{{ gameon_static_url }}/js/lib/soundmanager/script/soundmanager2.js"></script>
     <script type="text/javascript"
-            src="/gameon/static/js/lib/loopj-jquery-simple-slider-fa64f59/js/simple-slider.min.js"></script>
-    <script type="text/javascript" src="/gameon/static/js/Queue.js"></script>
-    <script type="text/javascript" src="/gameon/static/js/utils.js"></script>
-    <script type="text/javascript" src="/gameon/static/js/wordutils.js"></script>
-    <script type="text/javascript" src="/gameon/static/js/gameon.js"></script>
+            src="{{ gameon_static_url }}/js/lib/loopj-jquery-simple-slider-fa64f59/js/simple-slider.min.js"></script>
+    <script type="text/javascript" src="{{ gameon_static_url }}/js/Queue.js"></script>
+    <script type="text/javascript" src="{{ gameon_static_url }}/js/utils.js"></script>
+    <script type="text/javascript" src="{{ gameon_static_url }}/js/wordutils.js"></script>
+    <script type="text/javascript" src="{{ gameon_static_url }}/js/gameon.js"></script>
 {%- endmacro %}
 
 {% macro volume() -%}
