@@ -1,12 +1,12 @@
 import logging
 import os.path
-import urllib
-import urllib2
+import urllib.request, urllib.parse, urllib.error
+import urllib.request, urllib.error, urllib.parse
 import wsgiref.handlers
 
 import webapp2
 from ws import ws
-from models.models import User
+from .models.models import User
 
 
 RECEIVER_ID = 'xxxxxxxx'
@@ -18,7 +18,7 @@ class IPNHandler(webapp2.RequestHandler):
     def verify_ipn(self, data):
         # prepares provided data set to inform PayPal we wish to validate the response
         data["cmd"] = "_notify-validate"
-        params = urllib.urlencode(data)
+        params = urllib.parse.urlencode(data)
 
         if ws.debug:
             # sends the data and request to the PayPal Sandbox
@@ -28,10 +28,10 @@ class IPNHandler(webapp2.RequestHandler):
 
 
 
-        req = urllib2.Request(paypal_url, params)
+        req = urllib.request.Request(paypal_url, params)
         req.add_header("Content-type", "application/x-www-form-urlencoded")
         # reads the response back from PayPal
-        response = urllib2.urlopen(req)
+        response = urllib.request.urlopen(req)
         status = response.read()
 
 

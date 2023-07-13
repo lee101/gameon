@@ -1,10 +1,11 @@
-import os
-import json
 import datetime
+import json
+import os
 from time import mktime
-from models.models import BaseModel
-from google.appengine.ext import ndb
-import pickle
+
+from .models.models import BaseModel
+
+
 class GameOnUtils(object):
     debug = os.environ.get('SERVER_SOFTWARE', '').startswith('Development/')
 

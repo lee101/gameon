@@ -2,15 +2,14 @@
 import os
 import json
 
-from google.appengine.api import users
 import webapp2
 from webapp2_extras import sessions
 import jinja2
 
-import facebook
-from paypal import IPNHandler
-from models.models import *
-from gameon_utils import GameOnUtils
+from . import facebook
+from .paypal import IPNHandler
+from .models.models import *
+from .gameon_utils import GameOnUtils
 import utils
 import jwt
 
@@ -41,57 +40,57 @@ class BaseHandler(webapp2.RequestHandler):
     @property
     def current_user(self):
         #===== Google Auth
-        user = users.get_current_user()
-        if user:
-            dbUser = User.byId(user.user_id())
-            if dbUser:
-                return dbUser
-            else:
-
-                dbUser = User()
-                dbUser.id = user.user_id()
-                dbUser.name = user.nickname()
-                dbUser.email = user.email().lower()
-                dbUser.put()
-                return dbUser
+        # user = users.get_current_user()
+        # if user:
+        #     dbUser = User.byId(user.user_id())
+        #     if dbUser:
+        #         return dbUser
+        #     else:
+        #
+        #         dbUser = User()
+        #         dbUser.id = user.user_id()
+        #         dbUser.name = user.nickname()
+        #         dbUser.email = user.email().lower()
+        #         User.save(dbUser)
+        #         return dbUser
 
         #===== FACEBOOK Auth
-        if self.session.get("user"):
-            # User is logged in
-            return User.byId(self.session.get("user")["id"])
-        else:
-            # Either used just logged in or just saw the first page
-            # We'll see here
-            fbcookie = facebook.get_user_from_cookie(self.request.cookies,
-                                                     FACEBOOK_APP_ID,
-                                                     FACEBOOK_APP_SECRET)
-            if fbcookie:
-                # Okay so user logged in.
-                # Now, check to see if existing user
-                user = User.byId(fbcookie["uid"])
-                if not user:
-                    # Not an existing user so get user info
-                    graph = facebook.GraphAPI(fbcookie["access_token"])
-                    profile = graph.get_object("me")
-                    user = User(
-                        key_name=str(profile["id"]),
-                        id=str(profile["id"]),
-                        name=profile["name"],
-                        profile_url=profile["link"],
-                        access_token=fbcookie["access_token"]
-                    )
-                    user.put()
-                elif user.access_token != fbcookie["access_token"]:
-                    user.access_token = fbcookie["access_token"]
-                    user.put()
-                    # User is now logged in
-                self.session["user"] = dict(
-                    name=user.name,
-                    profile_url=user.profile_url,
-                    id=user.id,
-                    access_token=user.access_token
-                )
-                return user
+        # if self.session.get("user"):
+        #     # User is logged in
+        #     return User.byId(self.session.get("user")["id"])
+        # else:
+        #     # Either used just logged in or just saw the first page
+        #     # We'll see here
+        #     fbcookie = facebook.get_user_from_cookie(self.request.cookies,
+        #                                              FACEBOOK_APP_ID,
+        #                                              FACEBOOK_APP_SECRET)
+        #     if fbcookie:
+        #         # Okay so user logged in.
+        #         # Now, check to see if existing user
+        #         user = User.byId(fbcookie["uid"])
+        #         if not user:
+        #             # Not an existing user so get user info
+        #             graph = facebook.GraphAPI(fbcookie["access_token"])
+        #             profile = graph.get_object("me")
+        #             user = User(
+        #                 key_name=str(profile["id"]),
+        #                 id=str(profile["id"]),
+        #                 name=profile["name"],
+        #                 profile_url=profile["link"],
+        #                 access_token=fbcookie["access_token"]
+        #             )
+        #             User.save(user)
+        #         elif user.access_token != fbcookie["access_token"]:
+        #             user.access_token = fbcookie["access_token"]
+        #             User.save(user)
+        #             # User is now logged in
+        #         self.session["user"] = dict(
+        #             name=user.name,
+        #             profile_url=user.profile_url,
+        #             id=user.id,
+        #             access_token=user.access_token
+        #         )
+        #         return user
                 #======== use session cookie user
         anonymous_cookie = self.request.cookies.get('wsuser', None)
         if anonymous_cookie is None:
@@ -100,7 +99,7 @@ class BaseHandler(webapp2.RequestHandler):
             anon_user = User()
             anon_user.cookie_user = 1
             anon_user.id = cookie_value
-            anon_user.put()
+            User.save(anon_user)
             return anon_user
         else:
             anon_user = User.byId(anonymous_cookie)
@@ -109,7 +108,7 @@ class BaseHandler(webapp2.RequestHandler):
             anon_user = User()
             anon_user.cookie_user = 1
             anon_user.id = anonymous_cookie
-            anon_user.put()
+            User.save(anon_user)
             return anon_user
 
     def render(self, view_name, extraParams={}):
@@ -172,7 +171,7 @@ class ScoresHandler(BaseHandler):
 
         currentUser = self.current_user
         currentUser.scores.append(userscore)
-        currentUser.put()
+        User.save(currentUser)
 
         self.response.out.write('success')
 
@@ -181,7 +180,7 @@ class DeleteAllScoresHandler(BaseHandler):
     def get(self):
         currentUser = self.current_user
         currentUser.scores = []
-        currentUser.put()
+        User.save(currentUser)
 
         self.response.out.write('success')
 
@@ -192,7 +191,7 @@ class AchievementsHandler(BaseHandler):
         achieve.type = int(self.request.get('type'))
         currentUser = self.current_user
         currentUser.achievements.append(achieve)
-        currentUser.put()
+        User.save(currentUser)
         self.response.out.write('success')
 
 
@@ -218,7 +217,7 @@ class makeGoldHandler(BaseHandler):
         if self.request.get('reverse', None):
             user = self.current_user
             user.gold = 0
-            user.put()
+            User.save(user)
             self.response.out.write('success')
         else:
             User.buyFor(self.current_user.id)
@@ -230,7 +229,7 @@ class SaveVolumeHandler(BaseHandler):
     def get(self):
         user = self.current_user
         user.volume = float(self.request.get('volume', None))
-        user.put()
+        User.save(user)
         self.response.out.write('success')
 
 
@@ -238,7 +237,7 @@ class SaveMuteHandler(BaseHandler):
     def get(self):
         user = self.current_user
         user.mute = int(self.request.get('mute', None))
-        user.put()
+        User.save(user)
         self.response.out.write('success')
 
 
@@ -246,7 +245,7 @@ class SaveLevelsUnlockedHandler(BaseHandler):
     def get(self):
         user = self.current_user
         user.levels_unlocked = int(self.request.get('levels_unlocked', None))
-        user.put()
+        User.save(user)
         self.response.out.write('success')
 
 
@@ -254,7 +253,7 @@ class SaveDifficultiesUnlockedHandler(BaseHandler):
     def get(self):
         user = self.current_user
         user.difficulties_unlocked = int(self.request.get('difficulties_unlocked', None))
-        user.put()
+        User.save(user)
         self.response.out.write('success')
 
 
@@ -305,7 +304,7 @@ class PostbackHandler(BaseHandler):
                             # pb.recurrencePrice = request_info['recurrence']['price']
                             # pb.recurrenceFrequency = request_info['recurrence']['frequency']
 
-                        pb.put()
+                        Postback.save(pb)
                         sellerData = request_info.get('sellerData')
                         User.buyFor(sellerData)
                         # respond back to complete payment

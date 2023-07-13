@@ -1,9 +1,17 @@
-from google.appengine.ext import ndb
+from google.cloud import ndb
+from google.cloud.ndb import Cursor
+
+client = ndb.Client()
+
 
 class BaseModel(ndb.Model):
-    def default(self, o): return o.to_dict()
-    # def to_dict(self):
-    #    return dict([(p, unicode(getattr(self, p))) for p in self._properties])
+    def default(self, o):
+        return o.to_dict()
+
+    @classmethod
+    def save(cls, obj):
+        with client.context():
+            return obj.put()
 
 class Score(BaseModel):
     time = ndb.DateTimeProperty(auto_now_add=True)
@@ -41,17 +49,20 @@ class User(BaseModel):
 
     @classmethod
     def byId(cls, id):
-        return cls.query(cls.id == id).get()
+        with client.context():
+            return cls.query(cls.id == id).get()
 
     @classmethod
     def buyFor(cls, userid):
-        dbuser = User.byId(userid)
-        dbuser.gold = 1
-        dbuser.put()
+        with client.context():
+            dbuser = User.byId(userid)
+            dbuser.gold = 1
+            dbuser.put()
 
     @classmethod
     def byToken(cls, token):
-        return cls.query(cls.access_token == token).get()
+        with client.context():
+            return cls.query(cls.access_token == token).get()
 
 
 class Postback(BaseModel):
