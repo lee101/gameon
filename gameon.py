@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import os
 import json
+from datetime import datetime
 
 from google.appengine.api import users
 import webapp2
@@ -10,6 +11,7 @@ import jinja2
 import facebook
 from paypal import IPNHandler
 from models.models import *
+from models.models import get_session
 from gameon_utils import GameOnUtils
 import utils
 import jwt
@@ -39,26 +41,34 @@ class BaseHandler(webapp2.RequestHandler):
     """
 
     @property
+    def db(self):
+        """Per-request SQLAlchemy session."""
+        if not hasattr(self, "_db_session"):
+            self._db_session = get_session()
+        return self._db_session
+
+    @property
     def current_user(self):
         #===== Google Auth
         user = users.get_current_user()
         if user:
-            dbUser = User.byId(user.user_id())
-            if dbUser:
-                return dbUser
-            else:
-
-                dbUser = User()
-                dbUser.id = user.user_id()
-                dbUser.name = user.nickname()
-                dbUser.email = user.email().lower()
-                dbUser.put()
-                return dbUser
+            dbUser = User.byExternalId(user.user_id(), session=self.db)
+            if not dbUser:
+                dbUser = User(
+                    external_id=user.user_id(),
+                    name=user.nickname(),
+                    email=user.email().lower()
+                )
+                self.db.add(dbUser)
+            dbUser.updated = datetime.utcnow()
+            self.db.commit()
+            return dbUser
 
         #===== FACEBOOK Auth
-        if self.session.get("user"):
+        session_user = self.session.get("user")
+        if session_user:
             # User is logged in
-            return User.byId(self.session.get("user")["id"])
+            return User.byExternalId(session_user.get("external_id"), session=self.db)
         else:
             # Either used just logged in or just saw the first page
             # We'll see here
@@ -68,27 +78,26 @@ class BaseHandler(webapp2.RequestHandler):
             if fbcookie:
                 # Okay so user logged in.
                 # Now, check to see if existing user
-                user = User.byId(fbcookie["uid"])
+                user = User.byExternalId(fbcookie["uid"], session=self.db)
                 if not user:
                     # Not an existing user so get user info
                     graph = facebook.GraphAPI(fbcookie["access_token"])
                     profile = graph.get_object("me")
                     user = User(
-                        key_name=str(profile["id"]),
-                        id=str(profile["id"]),
+                        external_id=str(profile["id"]),
                         name=profile["name"],
                         profile_url=profile["link"],
                         access_token=fbcookie["access_token"]
                     )
-                    user.put()
+                    self.db.add(user)
                 elif user.access_token != fbcookie["access_token"]:
                     user.access_token = fbcookie["access_token"]
-                    user.put()
-                    # User is now logged in
+                self.db.commit()
+                # User is now logged in
                 self.session["user"] = dict(
                     name=user.name,
                     profile_url=user.profile_url,
-                    id=user.id,
+                    external_id=user.external_id,
                     access_token=user.access_token
                 )
                 return user
@@ -97,19 +106,17 @@ class BaseHandler(webapp2.RequestHandler):
         if anonymous_cookie is None:
             cookie_value = utils.random_string()
             self.response.set_cookie('wsuser', cookie_value, max_age=15724800)
-            anon_user = User()
-            anon_user.cookie_user = 1
-            anon_user.id = cookie_value
-            anon_user.put()
+            anon_user = User(external_id=cookie_value, cookie_user=1)
+            self.db.add(anon_user)
+            self.db.commit()
             return anon_user
         else:
-            anon_user = User.byId(anonymous_cookie)
+            anon_user = User.byExternalId(anonymous_cookie, session=self.db)
             if anon_user:
                 return anon_user
-            anon_user = User()
-            anon_user.cookie_user = 1
-            anon_user.id = anonymous_cookie
-            anon_user.put()
+            anon_user = User(external_id=anonymous_cookie, cookie_user=1)
+            self.db.add(anon_user)
+            self.db.commit()
             return anon_user
 
     def render(self, view_name, extraParams={}):
@@ -140,10 +147,14 @@ class BaseHandler(webapp2.RequestHandler):
         self.session_store = sessions.get_store(request=self.request)
         try:
             webapp2.RequestHandler.dispatch(self)
-        except:
-            pass
         finally:
             self.session_store.save_sessions(self.response)
+            if hasattr(self, "_db_session"):
+                # scoped_session requires remove to clear thread-local
+                try:
+                    self.db.close()
+                finally:
+                    pass
 
     @webapp2.cached_property
     def session(self):
@@ -166,13 +177,14 @@ class GetUserHandler(BaseHandler):
 class ScoresHandler(BaseHandler):
     # TODO should be ndb.transactional but we would need ancestor queries
     def get(self):
-        userscore = Score()
-        userscore.score = int(self.request.get('score'))
-        userscore.game_mode = int(self.request.get('game_mode'))
-
         currentUser = self.current_user
-        currentUser.scores.append(userscore)
-        currentUser.put()
+        userscore = Score(
+            score=int(self.request.get('score')),
+            game_mode=int(self.request.get('game_mode')),
+            user=currentUser
+        )
+        self.db.add(userscore)
+        self.db.commit()
 
         self.response.out.write('success')
 
@@ -181,18 +193,17 @@ class DeleteAllScoresHandler(BaseHandler):
     def get(self):
         currentUser = self.current_user
         currentUser.scores = []
-        currentUser.put()
+        self.db.commit()
 
         self.response.out.write('success')
 
 
 class AchievementsHandler(BaseHandler):
     def get(self):
-        achieve = Achievement()
-        achieve.type = int(self.request.get('type'))
         currentUser = self.current_user
-        currentUser.achievements.append(achieve)
-        currentUser.put()
+        achieve = Achievement(type=int(self.request.get('type')), user=currentUser)
+        self.db.add(achieve)
+        self.db.commit()
         self.response.out.write('success')
 
 
@@ -218,10 +229,10 @@ class makeGoldHandler(BaseHandler):
         if self.request.get('reverse', None):
             user = self.current_user
             user.gold = 0
-            user.put()
+            self.db.commit()
             self.response.out.write('success')
         else:
-            User.buyFor(self.current_user.id)
+            User.buyFor(self.current_user.external_id, session=self.db)
             ##TODOFIX
             self.redirect("/play")
 
@@ -230,7 +241,7 @@ class SaveVolumeHandler(BaseHandler):
     def get(self):
         user = self.current_user
         user.volume = float(self.request.get('volume', None))
-        user.put()
+        self.db.commit()
         self.response.out.write('success')
 
 
@@ -238,7 +249,7 @@ class SaveMuteHandler(BaseHandler):
     def get(self):
         user = self.current_user
         user.mute = int(self.request.get('mute', None))
-        user.put()
+        self.db.commit()
         self.response.out.write('success')
 
 
@@ -246,7 +257,7 @@ class SaveLevelsUnlockedHandler(BaseHandler):
     def get(self):
         user = self.current_user
         user.levels_unlocked = int(self.request.get('levels_unlocked', None))
-        user.put()
+        self.db.commit()
         self.response.out.write('success')
 
 
@@ -254,7 +265,7 @@ class SaveDifficultiesUnlockedHandler(BaseHandler):
     def get(self):
         user = self.current_user
         user.difficulties_unlocked = int(self.request.get('difficulties_unlocked', None))
-        user.put()
+        self.db.commit()
         self.response.out.write('success')
 
 
@@ -305,9 +316,11 @@ class PostbackHandler(BaseHandler):
                             # pb.recurrencePrice = request_info['recurrence']['price']
                             # pb.recurrenceFrequency = request_info['recurrence']['frequency']
 
-                        pb.put()
+                        self.db.add(pb)
+                        self.db.commit()
+
                         sellerData = request_info.get('sellerData')
-                        User.buyFor(sellerData)
+                        User.buyFor(sellerData, session=self.db)
                         # respond back to complete payment
                         self.response.out.write(order_id)
 

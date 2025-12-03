@@ -1,1 +1,1 @@
- 
+from .gameon_routes import router as gameon_router
