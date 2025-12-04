@@ -2,18 +2,13 @@ import os
 import json
 import datetime
 from time import mktime
-from models.models import BaseModel
-from google.appengine.ext import ndb
-import pickle
+
 class GameOnUtils(object):
-    debug = os.environ.get('SERVER_SOFTWARE', '').startswith('Development/')
+    debug = os.environ.get('DEBUG', 'false').lower() == 'true'
 
     @classmethod
     def json_serializer(cls, obj):
-
-        """Default JSON serializer."""
         import calendar, datetime
-
         if isinstance(obj, datetime.datetime):
             if obj.utcoffset() is not None:
                 obj = obj - obj.utcoffset()
@@ -24,13 +19,9 @@ class GameOnUtils(object):
         return millis
 
     class MyEncoder(json.JSONEncoder):
-
         def default(self, obj):
             if isinstance(obj, datetime.datetime):
                 return int(mktime(obj.timetuple()))
-            if isinstance(obj, BaseModel):
-                obj.key = None
-                obj.id = None
-                return obj.to_dict()
-
-            return obj.__dict__ #json.JSONEncoder.default(self, obj.__dict__)
+            if hasattr(obj, '__dict__'):
+                return obj.__dict__
+            return json.JSONEncoder.default(self, obj)

@@ -22,7 +22,7 @@ class ModelsTest(unittest.TestCase):
         self.session.add(score)
         self.session.commit()
 
-        scores = Score.query(self.session).all()
+        scores = self.session.query(Score).all()
         self.assertEqual(1, len(scores))
         self.assertEqual(user.id, scores[0].user_id)
 

@@ -1,69 +1,18 @@
 import os
+from sqlalchemy import Column, String, Integer, Float, DateTime, Text, ForeignKey, Table, create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship, sessionmaker, scoped_session
 from datetime import datetime
 
-from sqlalchemy import (
-    Column,
-    String,
-    Integer,
-    Float,
-    DateTime,
-    Text,
-    ForeignKey,
-)
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship, scoped_session, sessionmaker
-from sqlalchemy import create_engine
-
-# ---------------------------------------------------------------------------
-# SQLAlchemy session / engine setup
-# ---------------------------------------------------------------------------
-DATABASE_URL = os.environ.get("GAMEON_DATABASE_URL", "sqlite:///gameon.db")
-
-_engine_kwargs = {}
-if DATABASE_URL.startswith("sqlite"):
-    # Needed so the same connection can be shared across threads in dev server
-    _engine_kwargs["connect_args"] = {"check_same_thread": False}
-
-engine = create_engine(DATABASE_URL, **_engine_kwargs)
-SessionLocal = scoped_session(sessionmaker(bind=engine, autoflush=False, autocommit=False))
-
+DATABASE_URL = os.environ.get('DATABASE_URL', 'sqlite:///gameon.db')
+engine = create_engine(DATABASE_URL, echo=False)
+SessionLocal = sessionmaker(bind=engine)
+ScopedSession = scoped_session(SessionLocal)
 
 def get_session():
-    """Return a scoped session (thread-local)."""
-    return SessionLocal()
+    return ScopedSession()
 
-
-class BaseModel(object):
-    """Lightweight mixin to mimic previous NDB-style helpers."""
-
-    @classmethod
-    def query(cls, session=None):
-        session = session or get_session()
-        return session.query(cls)
-
-    @classmethod
-    def byId(cls, entity_id, session=None):
-        session = session or get_session()
-        return session.get(cls, entity_id)
-
-    def put(self, session=None):
-        session = session or get_session()
-        session.add(self)
-        session.commit()
-        session.refresh(self)
-        return self
-
-    def to_dict(self):
-        data = {}
-        for column in self.__table__.columns:
-            value = getattr(self, column.name)
-            if isinstance(value, datetime):
-                value = value.isoformat()
-            data[column.name] = value
-        return data
-
-
-Base = declarative_base(cls=BaseModel)
+Base = declarative_base()
 
 class Score(Base):
     __tablename__ = 'scores'
@@ -117,11 +66,6 @@ class User(Base):
         return session.query(cls).filter(cls.external_id == external_id).first()
 
     @classmethod
-    def by_external_id(cls, external_id, session=None):
-        # convenience alias with pythonic name
-        return cls.byExternalId(external_id, session=session)
-
-    @classmethod
     def buyFor(cls, external_id, session=None):
         session = session or get_session()
         user = cls.byExternalId(external_id, session=session)
@@ -144,7 +88,4 @@ class Postback(Base):
     currencyCode = Column(String)
     time = Column(DateTime, default=datetime.utcnow)
 
-
-# Create tables on import for simple deployments (SQLite/local dev).
-# In production, migrations should manage schema.
 Base.metadata.create_all(engine)
